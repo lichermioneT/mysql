@@ -167,8 +167,24 @@ innodb存储引擎。
   alter database database_name charset= collate=;
 
   show create database d1;
-  
+  上面是对数据库的增删查改
 
+20
+  数据备份和恢复
+  mysqldump -P3306 -u root -p -B test1 > test1.sql;
+  source /.. test1.sql;
+  备份其实是备份的操作。
+  
+  mysqldump -P3306 -u root -p -B test1 table_1 table_2 > test1.sql;
+
+
+21
+  表的操作
+22创建表
+create table if not exists table_name(
+    
+
+    );
 
 
 
