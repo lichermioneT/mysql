@@ -1,0 +1,177 @@
+Be&y59ljiwY>
+6
+mysql -h ip -P port -u user -p 
+输入密码
+7
+1.数据库基础
+mysql实际上是一种网络服务 
+mysqld:服务端 d表示守护进程
+mysql: 客户端
+mysql本质上基于C(mysql)S(mysqld)模式的一种网络服务
+
+netstat -nltp
+tcp6       0      0 :::3306                 :::*                    LISTEN      5673/mysqld         
+mysql是一套给我们提供数据存取服务的网络程序。
+
+数据库一般指的是，在磁盘或者内存中存储的特定结构组织的数据。
+将来磁盘上存储的一套数据库方案。
+数据库--磁盘
+数据库服务--mysqld
+
+存储数据的时候，文件就可以了，为什么还需要数据呢？
+  1.一般的文件确实给我们提供了数据的存储功能，但是文件并没有提非常好的数据管理能力(用户角度)。数据管理，数据内容。
+  2.数据库本质：对数据内容存储的一套解决方案。 你给我字段或者要求，我直接给你结果就行
+
+文件缺点
+  安全性问题
+  查询和管理
+  存储不利
+  控制不方便
+
+存储解决方案。
+
+             服务器         磁盘
+  mysql      mysqld         数据库文件
+
+8
+见见数据库
+1.建立一个数据库
+2.建立一张表结构
+3.插入数据
+看看在Linux是如何工作的
+
+1.建立数据库，本质就是linux下的一个目录 /var/lib/mysql/
+  create database helloworld;
+2.使用表
+  use helloworld;
+3.创建表，linux下创建一个文件即可
+
+  mysql> create table student(
+    -> name varchar(32),
+    -> age int,
+    -> gender varchar(2)
+    -> );
+
+4.数据插入
+insert into student (name,age,gender) values('zhangs',11,'m');
+5.查看数据
+	select * from student;
+  
+现在只需要sql指令，操作数据，具体操作mysqld帮你维护。
+数据库本质也是文件，只不过这些文件并不有程序员直接操作，mysqld帮你操作。
+
+
+9
+常见数据库
+  My Structured Query Language
+
+10
+
+  mysql   mysqld  数据库
+                  DB    表
+  Client  MySql   DB    表
+                  DB    表
+11
+  MySql数据逻辑存储:excel
++--------+------+--------+
+| name   | age  | gender |
++--------+------+--------+
+| zhangs |   11 | m      |
+| zhangs |   11 | m      |
+| zhangs |   11 | m      |
++--------+------+--------+
+3 rows in set (0.00 sec)
+
+
+12
+MySql架构
+
+   client
+  Connect Pool
+  翻译sql语句
+  存储引擎(类型计算机体结构的驱动) 应用层。
+
+  文件系统。内核层。
+
+MySql其实是一个文件系统
+
+
+13
+SQL语句分类
+DDL data definition language 
+  create drop alter
+
+DML data manipulation language
+  insert delete update
+
+DCL data control language
+  grant revoke commit
+
+
+13
+存储引擎
+show engines;
+innodb存储引擎。
+
+总结：
+  1.数据库是什么
+  2.mysql
+  3.mysqld
+  数据库和表
+  mysql层
+
+14
+ 创建数据库
+ 增删查改
+  
+
+15
+  创建数据库
+  show databases;                             对应linux的创建目录
+  create database [if not exists] helloworld  上面呢      /var/lib/mysql/
+  drop database database_name;                删除数据库  删除目录
+  
+数据库的编码
+1.数据库编码集   存数据 编码集  数据库未来存储数据
+2.数据校验集集合 取数据 校验集  读取数据
+
+数据库无论对数据做任何操作，都必须保证操作和编码必须是编码一直的。
+
+16
+  show varivales like 'character_set_database';
+  show variables like 'collation_database';
+  show variables like 'collation_%';
+  show charset;
+  show collation;
+  存取的规则必须一一致的。
+  
+
+17
+  一般不会设置编码 校验规则。
+
+19
+  数据库的删除 不建议直接删除数据库
+  drop database databae_name;
+  
+  查数据库
+  show databases;
+
+  使用数据库
+  use database_name;
+
+  查看当前在那个数据库里面
+  select database();
+
+  
+  修改数据库
+  alter database database_name charset= collate=;
+
+  show create database d1;
+  
+
+
+
+
+
+
+
