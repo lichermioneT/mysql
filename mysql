@@ -180,11 +180,119 @@ innodb存储引擎。
 
 21
   表的操作
+
 22创建表
 create table if not exists table_name(
-    
+    ); character set . collate , engine 
 
-    );
+存储引擎文件不一样和搜索方法不一样的。
+数据和索引的位置是否一样的
+
+23数据
+  select database();查看在那个表里面呢
+  desc table_name; 查看表数据
+  show create table table_name \G; 当时是如何创建表的。
+  
+24
+  修改表
+  alter table table_name reame to new_name;修改表名称
+  insert into user() values();              插入数据
+
+  alter table table_name add 名称 类型     新增字段
+  alter table table_name modify 名称 属性  重新修改提交属性
+  alter table table_name drop 名称         删除列
+  alter table table_name change 属性 新属性 修改属性   
+
+25
+ 删除表
+ drop table table_name;
+
+26
+  数据类型
+  
+  数值类型
+  文本二进制类型
+  时间日期
+  String类型
+
+  数值类型
+  tiny   int 1字节
+  small  int 2字节
+  medium int 3字节
+         int 4字节
+  big    int 8字节
+  tiny   u int 1字节
+  small  u int 2字节
+  medium u int 3字节
+         u int 4字节
+  big    u int 8字节
+
+约束
+  插入数据超出范围 mysql直接拒绝 语言层面会发生截断的
+  反过来，插入数据成功了一定就是合法的了。
+  所以，mysql中，一把而言，数据类型本身也是一种：约束。倒逼程序员，让程序员尽肯能进行正确的
+  插入 
+  约束：约束使用者
+  另外，你不是一个很好的使用者，mysql也能保证插入数据的合法性。
+  就能够保证数据库中的数据是可预期，完整的。
+约束
+约束
+约束
+  
+  mysql表建立属性列：列名称 类型在后面。
+unsigned使用看场景，例如年龄。
+这么多的数据类型，性能和使用之间做平衡的。
+
+
+27
+
+bit类型
+默认一个比特位
+最大64个比特位
+select id, hex(online) from t3; 一般是不能显示出来 是ASCII存储的
+你直接插入 a 97数据 一样的。
+
+28
+浮点类型
+float
+float(m,n)
+  float(4,2)四位，精度是2 (-99.99, 99.99)
+  mysql默认四舍五入
+  四舍五入也不能超过范围的
+
+  float(4,2) unsigned (0, 99.99);
+
+29
+  decimal  规避精度损失
+
+30
+  字符串类型
+  char固定长度字符串
+  char(L)最大长度255；
+  超过字符串长度就阻止了。
+
+  char的字符单位 就是纯粹的字符
+  中国人三个字符
+  最大255个字符
+  utf_8一个汉字三个字节的
+
+  
+31
+  varchar
+  边长字符串65535字节
+
+  char    有多少用多少  类似数组
+  varchar 上线不能超过  string
+
+
+
+
+
+
+
+
+
+
 
 
 
