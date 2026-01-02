@@ -284,18 +284,78 @@ float(m,n)
   char    有多少用多少  类似数组
   varchar 上线不能超过  string
 
+32
+日期：年月日         生日
+时间：年月日time     发表评论
+时间戳：timestamp    需要自动变化的
+
+update t11 set t1='2000-2-10';
+
+timestamp记录任何一次操作的时间戳。
+datetime时间不会变化的固定时间的
+记录你的入职事时间，基本上不能改的
+政府记录你的出生日期，基本上不会修改的
+date只是用来记录日期的，记住你男朋友女朋友的生日。
+结合具体的引用场景来记录时间的
+
+
+33
+枚举和集合
+枚举
+enum数据类型 只能选择一个
+set数据类型  多个选择多个
+
+枚举类型是从常量0开始的。
+集合多个插入时注意不要空格的，直接逗号分隔符。
+
+NULL和空白
+NULL表示没有
+空白表示空串
+
+集合是个数的比特位
+可以字面值
+可以比特位的计算
+
+后面理解为为什么一开始
+
+34
+  find_in_set
+枚举类型的查找
+select * from t13 where gender='男';
+select * from t13 where gender=1;
+
+只有羽毛球的选手
+select from t13 where hobby='羽毛球';
+这里是严格按照标准选择的
+
+find_in_set();
+对应的元素是否在集合里面的。
 
 
 
+select * from t13 where find_in_set('代码', hobby); 有代码
+select * from t13 where find_in_set( '代码', hobby) and find_in_set('足球', hobby); 有足球和代码
 
+35
+表的约束：表中一定要有各种约束，通过约束，让我们未来插入数据库表中的数据是复合预期的。
+约束本质是通过技术手段，插入正确的数据。
+反过来，站在mysql的视角，凡是插入进来的数据，都是符合数据约束的！
 
+约束的最终目标：保证数据的完整性和可预期性。
+需要更多的约束条件
 
+36
+空属性
+字段的属性 null
+字段的属性 not null
 
+class_name varchar(20) not null 不能插入NULL
+只要设置not null。必须存放数据的，不能是NULL。
 
+37
+default 默认值
 
-
-
-
-
+如果设置了，用户将来插入了，有具体的数据，就插入，没有就是用默认值。
+如果我们没有明确指定一列
 
 
