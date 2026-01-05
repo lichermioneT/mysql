@@ -358,4 +358,23 @@ default 默认值
 如果设置了，用户将来插入了，有具体的数据，就插入，没有就是用默认值。
 如果我们没有明确指定一列
 
+not null default 值
+只要default值 不是空的就行。
+default和NOT NULL不冲突的
+NOT NULL用户想插入数据是，数据合法
+DEFAULT用户没有设置，直接默认值
+
+建表的时候，MySQL优化表，默认值设置值NULL。
+分清约束是NOT NULL 还是default值。
+一般not null和default不放在一起
+
+38
+comment注释 列描述
+约束信息，给维护数据表的人看的，软性约束。
+
+39
+zerofill约束
+显示数据方面的约束
+
+
 
