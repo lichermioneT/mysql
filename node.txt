@@ -1,0 +1,7 @@
+1character set:字符集定义了如何将字符映射为二进制数据。
+2collation:校验集定义了字符串的比较规则和排序规则。
+
+ci:case insenstive
+cs:case senstiiv
+bin:binary
+
