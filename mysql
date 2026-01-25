@@ -2,15 +2,20 @@ Be&y59ljiwY>
 6
 mysql -h ip -P port -u user -p 
 输入密码
+
 7
 1.数据库基础
 mysql实际上是一种网络服务 
-mysqld:服务端 d表示守护进程
+mysqld:服务端 d表示守护进程 daemon守护进程。
 mysql: 客户端
 mysql本质上基于C(mysql)S(mysqld)模式的一种网络服务
 
+查看mysql的端口号
 netstat -nltp
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
 tcp6       0      0 :::3306                 :::*                    LISTEN      5673/mysqld         
+
+2数据库服务
 mysql是一套给我们提供数据存取服务的网络程序。
 
 数据库一般指的是，在磁盘或者内存中存储的特定结构组织的数据。
@@ -18,9 +23,11 @@ mysql是一套给我们提供数据存取服务的网络程序。
 数据库--磁盘
 数据库服务--mysqld
 
+3为什么使用mysql存储
 存储数据的时候，文件就可以了，为什么还需要数据呢？
-  1.一般的文件确实给我们提供了数据的存储功能，但是文件并没有提非常好的数据管理能力(用户角度)。数据管理，数据内容。
-  2.数据库本质：对数据内容存储的一套解决方案。 你给我字段或者要求，我直接给你结果就行
+  1.一般的文件确实给我们提供了数据的存储功能，但是文件并没有提非常好的数据管理能力(用户角度)。数据管理，数据内容。 文件只是rwx,不是数据的内容的权限管理。这样的代码太难得写了。
+  2.数据库本质：对数据内容存储的一套解决方案。 你给我字段或者要求，我直接给你结果就行。我就是mysqld.
+对数据内容进行更加细腻度的操作。
 
 文件缺点
   安全性问题
@@ -29,8 +36,7 @@ mysql是一套给我们提供数据存取服务的网络程序。
   控制不方便
 
 存储解决方案。
-
-             服务器         磁盘
+  客户端     服务器         磁盘
   mysql      mysqld         数据库文件
 
 8
@@ -40,13 +46,16 @@ mysql是一套给我们提供数据存取服务的网络程序。
 3.插入数据
 看看在Linux是如何工作的
 
+create database helloworld; 下面多了一个文件目录
+/var/lib/mysql/helloworld
+
 1.建立数据库，本质就是linux下的一个目录 /var/lib/mysql/
   create database helloworld;
 2.使用表
-  use helloworld;
+  use helloworld; 类似cd指令
 3.创建表，linux下创建一个文件即可
-
-  mysql> create table student(
+  mysql> create table student
+    ->(
     -> name varchar(32),
     -> age int,
     -> gender varchar(2)
@@ -60,17 +69,20 @@ insert into student (name,age,gender) values('zhangs',11,'m');
 现在只需要sql指令，操作数据，具体操作mysqld帮你维护。
 数据库本质也是文件，只不过这些文件并不有程序员直接操作，mysqld帮你操作。
 
-
 9
-常见数据库
+常见数据库类型
+Michael Widenius
   My Structured Query Language
+redis
 
 10
-
+mysql的工作关系原理
   mysql   mysqld  数据库
                   DB    表
   Client  MySql   DB    表
                   DB    表
+mysqld:服务端的守护进程。
+
 11
   MySql数据逻辑存储:excel
 +--------+------+--------+
