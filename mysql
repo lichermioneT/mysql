@@ -77,14 +77,15 @@ redis
 
 10
 mysql的工作关系原理
-  mysql   mysqld  数据库
-                  DB    表
-  Client  MySql   DB    表
-                  DB    表
+  mysql   mysqld         数据库
+                         DB    表(二进制文件)
+  Client  MySqld服务端   DB    表
+                         DB    表
 mysqld:服务端的守护进程。
 
+
 11
-  MySql数据逻辑存储:excel
+  MySql数据逻辑存储:excel。逻辑存储和物理存储不一样的。
 +--------+------+--------+
 | name   | age  | gender |
 +--------+------+--------+
@@ -95,33 +96,35 @@ mysqld:服务端的守护进程。
 3 rows in set (0.00 sec)
 
 
-12
-MySql架构
-
+MySql架构(mysqld的架构)
    client
-  Connect Pool
-  翻译sql语句
-  存储引擎(类型计算机体结构的驱动) 应用层。
-
-  文件系统。内核层。
-
+  Connect Pool  安全和链接管理
+  翻译sql语句   词法分析和语法分析
+  存储引擎(类似计算机体结构的驱动) 应用层。对应不同的种类数据类型。数据存储方案
+  文件系统。内核层。 对应的文件系统。
 MySql其实是一个文件系统
+在OS之上的文件系统。用户--->mysql--->实际的操作系统的文件系统。
+OS上面的三层就是用户层 下面OS
+应用层，网络层。
 
 
-13
+12
 SQL语句分类
-DDL data definition language 
+DDL data definition language 数据定义语言
   create drop alter
 
-DML data manipulation language
+DML data manipulation language 数据操作语言，操作数据
   insert delete update
+  DQL:数据查询语言
 
-DCL data control language
+DCL data control language  数据控制语言,数据权限和事务
   grant revoke commit
 
 
 13
-存储引擎
+存储引擎是：数据库管理系统如何存储数据、如何为存储的数据建立索引和如何更新、查询数据等技术
+的实现方法。
+
 show engines;
 innodb存储引擎。
 
@@ -135,19 +138,19 @@ innodb存储引擎。
 14
  创建数据库
  增删查改
-  
 
-15
   创建数据库
-  show databases;                             对应linux的创建目录
-  create database [if not exists] helloworld  上面呢      /var/lib/mysql/
-  drop database database_name;                删除数据库  删除目录
+  show   databases;                              对应linux的创建目录 类似ls指令
+  create database  [if not exists] helloworld    上面呢      /var/lib/mysql/
+  drop   database  database_name;                删除数据库  删除目录
+  数据库在上层，文件系统在下层的。
   
 数据库的编码
-1.数据库编码集   存数据 编码集  数据库未来存储数据
-2.数据校验集集合 取数据 校验集  读取数据
+1.数据库编码集   存数据 编码集  数据库未来存储数据 utf8mb4:最多四个字节，可以表示Emoji.
+2.数据校验集合   取数据 校验集  读取数据 
+      进行字段比较实用的编码，本质也是一种读取数据库中数据采用的编码格式。
 
-数据库无论对数据做任何操作，都必须保证操作和编码必须是编码一直的。
+数据库无论对数据做任何操作，都必须保证操作和编码必须是编码一致的。
 
 16
   show varivales like 'character_set_database';
@@ -156,10 +159,19 @@ innodb存储引擎。
   show charset;
   show collation;
   存取的规则必须一一致的。
-  
+
 
 17
   一般不会设置编码 校验规则。
+create database d1;
+create database d2 charset=utf8;
+create database d3 character    set utf8;
+create database d4 charset=utf8 collate utf8_general_ci;
+
+default-character-set=utf8
+default-collation=utf8_general_ci
+
+18
 
 19
   数据库的删除 不建议直接删除数据库
