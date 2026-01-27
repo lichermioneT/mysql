@@ -172,10 +172,14 @@ default-character-set=utf8
 default-collation=utf8_general_ci
 
 18
+create database tesst1 collate utf8_general_ci; 不区分大小写
+create database tesst1 collate utf8_bin;        区分大小写
+默认配置就行了
+
 
 19
   数据库的删除 不建议直接删除数据库
-  drop database databae_name;
+  drop database if exists databae_name;
   
   查数据库
   show databases;
@@ -183,31 +187,44 @@ default-collation=utf8_general_ci
   使用数据库
   use database_name;
 
+  使用数据库
+  use database_name;
+
   查看当前在那个数据库里面
   select database();
 
-  
-  修改数据库
+  修改数据库的属性
   alter database database_name charset= collate=;
 
   show create database d1;
   上面是对数据库的增删查改
 
 20
-  数据备份和恢复
+  数据备份和恢复，不建议直接指令复制文件夹
   mysqldump -P3306 -u root -p -B test1 > test1.sql;
+
   source /.. test1.sql;
   备份其实是备份的操作。
   
+  备份一张表
   mysqldump -P3306 -u root -p -B test1 table_1 table_2 > test1.sql;
 
+  show processlist;
 
 21
   表的操作
 
+
 22创建表
+字符集
+校验集
+存储引擎
+
 create table if not exists table_name(
+    name1 datatype;
+    name2 datatype;
     ); character set . collate , engine 
+
 
 存储引擎文件不一样和搜索方法不一样的。
 数据和索引的位置是否一样的
