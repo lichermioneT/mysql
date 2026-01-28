@@ -213,7 +213,7 @@ create database tesst1 collate utf8_bin;        区分大小写
 
 21
   表的操作
-
+  增删查改
 
 22创建表
 字符集
@@ -226,23 +226,34 @@ create table if not exists table_name(
     ); character set . collate , engine 
 
 
+create table if not exists table_name(
+    name1 datatype;
+    name2 datatype;
+    ); character set . collate , engine 
+
+
+
 存储引擎文件不一样和搜索方法不一样的。
 数据和索引的位置是否一样的
 
 23数据
+  use database_name;
   select database();查看在那个表里面呢
   desc table_name; 查看表数据
+  show create table table_name; 当时是如何创建表的。
   show create table table_name \G; 当时是如何创建表的。
-  
+    mysql会优化您对表的操作
+
 24
   修改表
-  alter table table_name reame to new_name;修改表名称
-  insert into user() values();              插入数据
+  alter table table_name
+  insert into user() values();               插入数据
 
-  alter table table_name add 名称 类型     新增字段
-  alter table table_name modify 名称 属性  重新修改提交属性
-  alter table table_name drop 名称         删除列
-  alter table table_name change 属性 新属性 修改属性   
+  alter table table_name reame to new_name;  修改表名称
+  alter table table_name add                 名称 类型     新增字段
+  alter table table_name modify              名称 属性     重新修改提交属性
+  alter table table_name drop                名称          删除列
+  alter table table_name change              属性 新属性   修改属性   
 
 25
  删除表
