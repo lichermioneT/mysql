@@ -413,19 +413,21 @@ NULL表示没有
   find_in_set
 枚举类型的查找
 select * from t13 where gender='男';
-select * from t13 where gender=1;
+select * from t13 where gender=1; 注意这里数字 没有引号
 
 只有羽毛球的选手
-select from t13 where hobby='羽毛球';
+select * from t13 where hobby='羽毛球';只有羽毛球的
 这里是严格按照标准选择的
 
 find_in_set();
+find_in_set('a', 'a, b, b');
+a在集合里面的
 对应的元素是否在集合里面的。
 
+select * from t13 where find_in_set('代码', hobby); 有代码就可以
+select * from t13 where find_in_set( '代码', hobby) and find_in_set('足球', hobby); 有足球和代码 就可以的
 
-
-select * from t13 where find_in_set('代码', hobby); 有代码
-select * from t13 where find_in_set( '代码', hobby) and find_in_set('足球', hobby); 有足球和代码
+select * from t13 where hobby=15;
 
 35
 表的约束：表中一定要有各种约束，通过约束，让我们未来插入数据库表中的数据是复合预期的。
@@ -433,14 +435,18 @@ select * from t13 where find_in_set( '代码', hobby) and find_in_set('足球', 
 反过来，站在mysql的视角，凡是插入进来的数据，都是符合数据约束的！
 
 约束的最终目标：保证数据的完整性和可预期性。
-需要更多的约束条件
+需要更多的约束条件，不仅仅是数据类型
 
 36
 空属性
 字段的属性 null
 字段的属性 not null
 
+selectt null
+selectt null+1
+
 class_name varchar(20) not null 不能插入NULL
+class_room varchar(20) not null 不能插入NULL
 只要设置not null。必须存放数据的，不能是NULL。
 
 37
