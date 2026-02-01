@@ -471,7 +471,37 @@ comment注释 列描述
 
 39
 zerofill约束
+  约束整数
 显示数据方面的约束
+在显示数值时，不足指定宽度的部分用前导 0 补齐.
+  创建的时候，默认给你带了。
+select a, b from t17 where
+  int(N) <N位给你补零，够了就不能够补充了。
+
+默认建表的时候int(10); 是int10 数据的大小约定了能够显示多少位。
+
+40
+主键约束
+主键约束：不能重复，不能为空。一张表只能有一个主键，且是整数约束，
+主键默认不能够为null
+凡是插入表的都是不重复的
+
+alter table table_name drop primary key; 删除主键
+alter table test_key add primary key(id);    添加主键
+delete from test_key where name = "张飞2"; 删除一行的数据
+
+一个主键可以添加给一列，或者多列。
+多列就是复合主键
+PRIMARY KEY (`id`,`coures`) 合起来才是主键的,必须这两个合起来是不一样的
 
 
+41自增长
+通常和主键搭配使用，作为逻辑主键。
+auto_increment。
+自增，可以自己插入增加数据，可以让它默认从零开始做增加。
+AUTO_INCREMENT记录下一次应该插入多少
 
+create table tt22( id int unsigned primary key auto_increment, name varchar(20) not null ) auto_increment=500;
+
+一张表只能有一个自增长的。
+select last_insert_id();
