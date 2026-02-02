@@ -505,3 +505,13 @@ create table tt22( id int unsigned primary key auto_increment, name varchar(20) 
 
 一张表只能有一个自增长的。
 select last_insert_id();
+
+42
+id char(20) unique comment "这是学学生的唯一键",
+主键不能为空的,且是唯一的。
+unique可以为空的。
+唯一键，只要插入进去，就是唯一的。
+主键的唯一性和其他键的唯一，也需要保证的。
+43
+
+
