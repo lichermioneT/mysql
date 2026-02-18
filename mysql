@@ -523,3 +523,45 @@ unique可以为空的。
 
 1.外键的作用：产生关联和增加约束
 
+44
+
+45
+CURD操作
+create retrieve update delete
+
+create 
+insert into table_name()        values(), ();
+insert into table_name(feature) values(), ();
+
+46
+主键或者唯一键的冲突
+insert into students values(13, 126, 'caoca', '111') on duplicate key update sn=127,name='caoca';
+冲突了就更新这条数据。
+
+47
+替换指令
+replace into students(sn, name, qq) values(129, '曹老板', '113455');
+
+48
+selecct * from table_name // 一般不推荐的,服务器的数据非常大的
+指定列查询
+select name,math,10 from exam_result; 追加一个值
+select math+chinese+english from exam_result;
+
+重命名可以带as 也可以不带as
+select math+chinese+english as total from exam_result;
+select name 姓名, chinese+math+english 总分 from exam_result;
+
+select distinct math 数学 from exam_result;  去重查询
+
+49
+where 子句
+null就是null
+0就是0
+
+null判断等于就是
+null<=>null  专用null比较
+
+50
+练习
+
