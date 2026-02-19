@@ -564,4 +564,82 @@ null<=>null  专用null比较
 
 50
 练习
+select * from table_name:全列的查找
+select name, chinese from table_name where chinese>=80 and chinese <=90;
+select name, chinese from table_name where chinese between 80 and 90
+select name, chinese from table_name where chinese=58 or  chinese 59 or chinese=98 or chinese=99;
+select name, chinese from table_name where chinese in(58,59,98,99);
+
+%模糊匹配，匹配多个或者零个字符。
+select name from exam_result where name  like '孙%';
+select name from exam_result where name  like '孙_';
+
+select name, chinese, math from exam_result where chinese>math;
+
+
+执行顺序
+select name, chinese+english+math as total from exam_result where total<200;
+3                                          1                2       
+
+select name,chinese from exam_result where chinese>80 and name not like '孙%';
+
+select name,chinese, math, english, chinese+math+english as total from exam_result where (chinese+math+english > 200 and chinese<math and english>80) or (name like '孙_');
+
+
+51
+  order by;
+asc
+desc
+select name, math from exam_result order by math desc;
+select name, math from exam_result order by math asc;
+
+52
+NULL值小于任何值。
+
+select name, math ,english, chinese from exam_result order by math desc, english desc, chinese asc;
+mysql默认升序排序的
+
+select name, chinese+math+english as total from exam_result order by order by total desc;
+select name, chinese+math+english as total from exam_result order by order by total desc;
+where不能使用别名，这为什么可以使用别名呢？
+where不能使用别名，这为什么可以使用别名呢？
+where不能使用别名，这为什么可以使用别名呢？
+
+
+order by
+select name, chinese+math+english as total from exam_result order by total desc;
+2                                          1                3
+先要有合适的数据才能排序的。
+
+where
+执行顺序
+select name, chinese+english+math as total from exam_result where total<200;
+
+select name, math from exam_result where name like '孙%' or name like '曹%' order by math desc;
+
+
+分页显示数据
+mysql的数据下标从零开始的
+select * from exam_result limit 4;显示行数 4行
+
+select * from exam_result limit 2, 4;从2开始，然后连续读取4行
+
+select * from exam_result limit 5 offset 0; 0开始，然后五行。
+
+select name, english+math+chinese as toatl from exam_result where english+math+chinese>200 order by toatl desc limit 1;
+
+limit的本质功能只是显示，功能更加靠后的。
+
+
+53
+update
+
+update exam_result set math = 80 where name='孙悟空';
+小心使用的
+
+
+54
+delete
+
+delete from exam_result where name='孙悟空';
 
