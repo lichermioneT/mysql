@@ -642,4 +642,26 @@ update exam_result set math = 80 where name='孙悟空';
 delete
 
 delete from exam_result where name='孙悟空';
+delete不会将自增数据清零的
 
+truncate不走事务的
+bin log, redo log, undo log.日志信息。
+
+55
+插入查询结果
+
+56
+聚合函数
+count
+sum
+avg
+max
+min
+select count(*) as 总数 from exam_result;
+
+对count的结果去重，只有一个数据，不需要去重的
+select distinct count(math) from exam_result;
+对math的数据去重后，然后进行数据的count
+select distinct count(distinct math) from exam_result;
+
+select sum(math) as 数学成绩总和 from exam_result;
