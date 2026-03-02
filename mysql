@@ -665,3 +665,38 @@ select distinct count(math) from exam_result;
 select distinct count(distinct math) from exam_result;
 
 select sum(math) as 数学成绩总和 from exam_result;
+
+57
+分组的目的是为了进行 分组之后进行聚合统计的。
+group by
+
+select max(sal) 最高, avg(sal) 平均 from emp group by deptno.
+1.先从emp提取数据
+2.然后分组
+3.然后max, avg
+
+
+select deptno, max(sal) 最高, avg(sal) 平均 from emp group by deptno.
+
+
+分组指定列名，实际分组，是用该列的不同的行数据来进行分组的！
+分组的条件deptno,组内一定是相同的---可以聚合压缩。
+分组，不就是把一组按照条件拆成多个组，进行各自组内的统计。
+
+一个表按照条件拆成多个子表。
+
+select deptno,job, max(sal) 最高, avg(sal) 平均 from emp group by deptno, job.
+
+
+select deptno, avg(sal) 平均 from emp group by deptno having 平均<2000;.
+
+having是对聚合后的统计数据进行条件筛选。
+
+having和where的区别理解? 执行顺序
+where具体列进行条件筛选，having对分组聚合之后的结果进行条件筛选。
+条件筛选的阶段不一样的。
+
+中间筛选出来的 和最后的结果也是表。
+MySQL一切皆表了。未来只要能够处理好一张单表的CURD，所有的SQL场景，我们全部都能够用同一的技术进行操作。
+
+ 
