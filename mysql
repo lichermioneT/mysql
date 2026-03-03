@@ -699,4 +699,72 @@ where具体列进行条件筛选，having对分组聚合之后的结果进行条
 中间筛选出来的 和最后的结果也是表。
 MySQL一切皆表了。未来只要能够处理好一张单表的CURD，所有的SQL场景，我们全部都能够用同一的技术进行操作。
 
- 
+
+58 
+时间函数
+select current_date(); 年月日
+select current_time(); 时分秒
+select current_timestamp(); 时间戳(mysql展现出来的是：日期+时间)
+  select now()类似上面的时间戳
+
+时间筛选函数
+date()函数
+
+select date_add(date, interval d_value_type) year,minute,second,day)
+select date_sub(date, interval d_value_type) year,minute,second,day)
+
+select datediff(date1, date2);年月日 date1-date2;
+
+59
+怎么确认表中的数据是2minute之内的。
+当前时间 减去 评论发表的时间。
+
+select content, sendtime from msg where sendtime > date_sub(now(), interval 2 minute);
+select content, sendtime from msg where date_add(sendtime, interval 10 minute) > current_time;
+
+60
+字符串函数
+select charset(str);返回字符串的字符集
+select concat(str1,...); 输入的数字也是字符串连接在一起的
+select instr(string, substring) 存储在就返回位置，不存在就返回零。正确的是从一开始返回的
+select ucase(string1) 转换成大写
+select lcase(string1) 转换成小写
+select left(string1,len)提取步长个字符串
+select right(string1,len)提取步长个字符串
+select length(string1)提出字符串长度
+
+
+61
+select charset(name) from class;实际的意义：数据的校验问题。
+select concat('考生姓名：', name, ', 总分：', chinese+math+english, ', 语文成绩：', chinese, ', 数学成绩：', math, ', 英语成绩 ', english) as msg from exam_result;
+select length(name), name from exam_result; 字节数的长度,字符串占用的字节数。
+select name, replace(name, '能','can') from exam_result; name里面的能 替换成can
+select substr(name,2,2) from exam_result;
+select ename, concat(lcase(substr(ename,1,1)), substr(ename,2)) from emp;
+select ltrim('   nihao');
+select rtrim('   nihao       ');
+select trim('   nihao       ');
+
+62
+select abs(123);
+select abs(-123);
+select bin(10) 1010
+select hex(11) b
+select conv(10, 10, 2)
+select format(3.3345344,2);
+select mod(10, 3);
+select rand();
+
+记住数轴函数
+select ceiling(); 向上取整函数
+select floor();   向下取整函数 
+
+63
+select user();
+select md5(str);形成一个摘要
+select database();
+select password(str);
+select ifnull(null,3);
+select ifnull(2,3);
+
+
