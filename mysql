@@ -767,4 +767,57 @@ select password(str);
 select ifnull(null,3);
 select ifnull(2,3);
 
+64
+select * from emp where (salary > 500 or job='MANAGER') and ename like 'J%';
+select * from emp where (salary > 500 or job='MANAGER') and ename substr(ename, 1, 1)='J';
+select * from emp order by deptno asc, sal desc;
+select sal*12 + ifnull(comm, 0) as 年薪 from emp order by 年薪 desc;
+select * from emp where sal=(select max(sal) from emp);
+select * from emp where sal > (select avg(sal)) from emp); 聚合函数必须在GROUP BY才能够进行计算的
+select max(sal) as 最高, avg(sal) as 平均 from emp group by deptno;
+select format(max(sal), 2) as 最高, format(avg(sal),2) as 平均 from emp group by deptno;
+select avg(sal) as 平均工资 from emp group by deptno having 平均工资 > 2000;
+select count(*) avg(sal) from emp group by job 
+
+65
+select * from emp dept;  笛卡尔积：两张表直接合起来了,穷举出来了
+select * from emp, dept where emp.deptno=dept.deptno;
+select ename, sal, dname from emp, dept where emp.deptno=dept.deptno;
+select ename, sal, dname,dept.deptno from emp, dept where emp.deptno=dept.deptno and emp.deptno=10;
+select ename, sal, grade from emp, salgrade where sal between losal and hisal;
+
+66
+自连接：同一张表进行笛卡尔积
+select empno,ename from emp where emp.empno=(select mgr from emp where ename='FORD');
+select * from emp e1, emp e2 where e1.ename='FORD' and e1.mgr=e2.empno;
+
+67
+子查询是指嵌入在其他sql语句中的select语句，也叫嵌套查询
+select * from emp where deptno=(select deptno from emp where ename='SMITH');
+
+in子句
+select ename, job, sal, deptno from emp where job in (select distinct job from emp where deptno=10) and deptno <> 10;
+SELECT tmp.ename, tmp.job, tmp.sal, d.dname
+FROM (
+    SELECT ename, job, sal, deptno
+    FROM emp
+    WHERE job IN (
+        SELECT DISTINCT job
+        FROM emp
+        WHERE deptno = 10
+    )
+    AND deptno <> 10
+) AS tmp
+JOIN dept d
+ON d.deptno = tmp.deptno;
+
+select * from emp where sal > all (select distinct sal from emp where deptno=30);
+select * from emp where sal > any (select distinct sal from emp where deptno=30);
+select * from emp where (deptno, job) = (select deptno, job from emp where ename='SMITH') and ename <> 'SMITH';
+
+68
+select * from emp,(select deptno, avg(sal) as myavg from emp group by deptno) as tmp where emp.deptno=tmp.deptno and emp.sal>tmp.myavg;
+select t1.ename, dept.loc, t1.deptno  from dept, (     select emp.empno, emp.ename, emp.job, emp.mgr, emp.hiredate,            emp.sal, emp.comm, emp.deptno     from emp,     (         select deptno, avg(sal) as myavg         from emp         group by deptno     ) as tmp     where emp.deptno = tmp.deptno       and emp.sal > tmp.myavg ) as t1 where dept.deptno = t1.deptno;
+select * from emp as t1,(select deptno, max(sal) mymax from emp group by deptno) as t2 where t1.deptno=t2.deptno and t1.sal=t2.mymax;
+select * from emp as t1,(select deptno, max(sal) mymax from emp group by deptno) as t2 where t1.deptno=t2.deptno and t1.sal=t2.mymax;
 
