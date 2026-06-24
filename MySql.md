@@ -153,30 +153,21 @@
 
 ![image-20260623220158893](picture/image-20260623220158893.png)
 
-Client
-   ↓
-SQL 接口
-   ↓
-解析器 (Parser)
-   ↓
-优化器 (Optimizer)
-   ↓
-执行器 (Executor)
-   ↓
-存储引擎 (Storage Engine)   ← 你问的核心
-   ↓
-磁盘文件
+**Client**
+   **↓**
+**SQL 接口**
+   **↓**
+**解析器 (Parser)**
+   **↓**
+**优化器 (Optimizer)**
+   **↓**
+**执行器 (Executor)**
+   **↓**
+**存储引擎 (Storage Engine)   ← 你问的核心**
+   **↓**
+**磁盘文件**
 
-| 能力         | 是否由存储引擎决定 |
-| ------------ | ------------------ |
-| 数据如何存储 | ✅                  |
-| 是否支持事务 | ✅                  |
-| 是否支持行锁 | ✅                  |
-| 索引实现方式 | ✅                  |
-| 崩溃恢复机制 | ✅                  |
-| 外键支持     | ✅                  |
 
- 
 
 **14 mysql预备：注意下面是数据库的操作。**
 
@@ -188,67 +179,46 @@ SQL 接口
 
 ### 2.1创建库和基本操作
 
-**创建数据库：指定编码集和校验集合**
-
 ```sql
-create database if not exists review character set utf8mb4 collate utf8mb4_general_ci;
+create database db_name;  // 本质就是 /var/lib/mysql下的一个目录
+drop   database db_name;  // 删除这个目录
+
+create database if not exists db_name;  // 本质就是 /var/lib/mysql下的一个目录
+drop   database if exists db_name;  // 删除这个目录
 ```
 
-**查看数据库的编码集**
+**数据库的编码集合校验集**
 
-```sql
-show variables like 'character_set_database';
+```
+字符集：字符怎么存
+排序规则：字符怎么比
 ```
 
-**查看数据库的校验集**
-
-```sql
-show variables like 'collation_database';
+```mysql
+show charset;  // 查看全部的字符集
+show collation; // 校验集
 ```
 
-**查看系统的字符集**
-
-```sql
-show charset;
+```mysql
+show variables like 'character_set_database'; // 当前默认数据库使用的字符集。
+show variables like 'collation_database';    // 当前默认数据库使用的排序规则，也就是校验规则。
 ```
 
-**查看系统的校验集**
-
-```sql
-show collation;
+```mysql
+character_set_database：当前数据库默认用什么字符集存储字符
+collation_database：当前数据库默认按照什么规则比较和排序字符
 ```
 
-**列出数据库**
+**推荐的字符集和校验集**
 
-```sql
-show databases;
-```
-
-**列出数据库的表**
-
-```sql
-show tables;
-```
-
-**显示如何创建的数据库**
-
-​	**SQL语句一般会被优化的**
-
-```sql
-show create database database_name
+```mysql
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_0900_ai_ci;
 ```
 
 
 
-### 2.2数据库的修改
 
-```sql
-ALTER DATABASE 数据库名
-CHARACTER SET = 字符集
-COLLATE = 排序规则;
-```
-
-**`CHARACTER SET` 和 `CHARSET` 完全等价。**
 
 
 
@@ -256,7 +226,7 @@ COLLATE = 排序规则;
 
 **创建的表会继承，数据库的字符集和校验集。**
 
-```sql
+```
 CREATE TABLE IF NOT EXISTS users (
     id INT,
     name CHAR(32) COMMENT '用户名',
