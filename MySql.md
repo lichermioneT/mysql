@@ -190,23 +190,18 @@ drop   database if exists db_name;  // 删除这个目录
 **数据库的编码集合校验集**
 
 ```
-字符集：字符怎么存
+字符集：字符怎么存，怎么还原的
 排序规则：字符怎么比
 ```
 
 ```mysql
-show charset;  // 查看全部的字符集
-show collation; // 校验集
+show charset;   // 查看全部的字符集
+show collation; // 查看全部的校验集
 ```
 
 ```mysql
 show variables like 'character_set_database'; // 当前默认数据库使用的字符集。
 show variables like 'collation_database';    // 当前默认数据库使用的排序规则，也就是校验规则。
-```
-
-```mysql
-character_set_database：当前数据库默认用什么字符集存储字符
-collation_database：当前数据库默认按照什么规则比较和排序字符
 ```
 
 **推荐的字符集和校验集**
@@ -218,24 +213,22 @@ COLLATE utf8mb4_0900_ai_ci;
 
 
 
+**创建数据库**
+
+```mysql
+create database d1
+create database d2 charset=utf8;
+create database d3 character set utf8;
+create database d4 character set utf8 collate uft8_general_ci;
+```
+
+
+
 
 
 
 
 ## 3.表的操作
-
-**创建的表会继承，数据库的字符集和校验集。**
-
-```
-CREATE TABLE IF NOT EXISTS users (
-    id INT,
-    name CHAR(32) COMMENT '用户名',
-    password CHAR(32) COMMENT '密码是32位的md5值',
-    birthday DATE COMMENT '用户的生日'
-);
-```
-
-
 
 **数据库本质就是linux下面的一个文件夹**
 
