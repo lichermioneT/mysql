@@ -222,7 +222,21 @@ create database d3 character set utf8;
 create database d4 character set utf8 collate uft8_general_ci;
 ```
 
+**18**
 
+```mysql
+CREATE DATABASE database_name
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_general_ci;  // 创建数据库
+```
+
+**19**
+
+```mysql
+drop database  db_name // 删除数据库
+use db_name
+select database(); 
+```
 
 
 
