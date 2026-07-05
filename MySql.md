@@ -235,22 +235,65 @@ COLLATE utf8mb4_general_ci;  // 创建数据库
 ```mysql
 drop database  db_name // 删除数据库
 use db_name
-select database(); 
+select database();  //
+show databases(); // 
+alter database d3 character set gbk  collate gbk_chinese_ci;
+show create database d3;
 ```
 
+**20**
 
+**数据库备份**
+
+
+
+## mysql库操作总结
+
+```mysql
+show databases; // 查看数据库
+create database if not exists d1 character set utf8 collate utf8_general_ci; // 创建数据库
+show create database d1; // 查看创建爱数据库的指令
+use d1; // 使用数据库
+alter database d1 character set gbk collate gbk_chinese_ci; // 修改数据库
+select database(); // 查看当前使用的数据
+drop databse d1;
+```
+
+```mysql
+mysqldump -u root -p d1 > d1.sql
+mysql -u root -p d1 < d1.sql
+```
 
 
 
 ## 3.表的操作
 
+**创建表**
+
 **数据库本质就是linux下面的一个文件夹**
 
 **表本质就是文件夹下面的文件**
 
+```mysql
+create table users2
+( id int, comment '序号'
+name varchar(20) comment '名称', 
+passwd char(32)  comment '密码', 
+birthday date comment '生日' 
+)character set utf8 collate utf8_general_ci engine InnoDB;
+```
+
+```mysql
+show tables;
+```
+
 ![image-20260303211038312](picture/image-20260303211038312.png)
 
+**查看表**
 
+```mysql
+show tables;
+```
 
 ```sql
 desc users
@@ -258,11 +301,39 @@ desc users
 
 ![image-20260303211203204](picture/image-20260303211203204.png)
 
+```mysql
+show create table users \G;
+```
+
+**表的修改**
+
+```mysql
+alter table users2 rename to user; // 表名的修改
+```
+
+```mysql
+alter table user add image_path varchar(128) comment '用户头像路径' after birthday; // 新增一列
+```
+
+```mysql
+alter table user modify name varchar(60); // 修改属性
+```
+
+```mysql
+alter table user drop passwd;
+```
+
+```mysql
+alter table users change name xingming varchar(20);
+```
 
 
 
+**表的删除**
 
-
+```mysql
+drop table tb_name
+```
 
 
 
