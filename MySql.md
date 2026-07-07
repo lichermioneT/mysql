@@ -536,6 +536,281 @@ M 是总位数，D 是小数位数，整数位数是 M-D。
 
 
 
+**5.5主键约束**
+
+**主键：primary key用来唯一的约束该字段里面的数据，不能重复，不能为空，一张表中最多只能有一个**
+
+**主键；主键所在的列通常是整数类型。**
+
+**主键约束默认就是 非空的**
+
+**更新：**
+
+​	**update t17 set name = '刘表' where id = 2;   主键存在方便更新。**
+
+**删除主键：**
+
+​	**alter table t17 drop primary key;  因为主键一张表一个，不要告诉我哪一个列的。**
+
+**添加主键：**
+
+​	**alter table t17 add primary key(id);  注意建表之前就使用 主键。**
+
+**数据的删除：**
+
+​	**delete from t17 where name = '刘备';**
+
+
+
+**复合主键：一个表一个主键，一个主键可以添加到一列，或者多列上（复合主键）。**
+
+**复合主键：一个主键贯穿多列。**
+
+```mysql
+mysql> create table t18(
+    -> id int unsigned,
+    -> coures char(10) comment '课程',
+    -> score tinyint unsigned default 60 comment '成绩',
+    -> primary key(id, coures)
+    -> );
+```
+
+**复合主键的语法是：在最后面进行指示。**
+
+**复合主键：约束的条件只需要有一个不一样就行了的。**
+
+```
+mysql> select * from t18;
++------+--------+-------+
+| id   | coures | score |
++------+--------+-------+
+| 1234 | 历史   |    44 |
+| 1234 | 马原   |    44 |
+| 1235 | 历史   |    44 |
+| 1235 | 马原   |    44 |
++------+--------+-------+
+4 rows in set (0.00 sec)
+```
+
+
+
+**5.6自增长**
+
+**auto_increment：当对应的字段，不给值，会自动的被系统触发，系统会从当前字段中已经有的最大值 +1操作，得到一个新的不同的值。**
+
+**通常和主键搭配使用，作为逻辑主键。**
+
+**自增长的特点: 任何一个字段要做自增长，前提是本身是一个索引（key一栏有值）** 
+
+**自增长字段必须是整数** 
+
+**一张表最多只能有一个自增长**
+
+
+
+**为什么从最大值增加一。**
+
+```
+mysql> show create table t19 \G
+*************************** 1. row ***************************
+       Table: t19
+Create Table: CREATE TABLE `t19` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(10) NOT NULL DEFAULT ' ',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8mb4
+1 row in set (0.00 sec)
+
+mysql> 
+```
+
+
+
+**可以设置起始值的**
+
+```mysql
+create table t20( 
+    id int primary key auto_increment, 
+    name varchar(20) not null 
+    )auto_increment = 55;
+```
+
+**默认值就从：55开始的。**
+
+
+
+**5.7 唯一键**
+
+| 对比项                      | 主键约束 `PRIMARY KEY`           | 唯一键约束 `UNIQUE`                |
+| --------------------------- | -------------------------------- | ---------------------------------- |
+| **主要作用**                | **唯一标识表中的一条记录**       | **保证某列或某组列的数据不重复**   |
+| **是否允许重复**            | **不允许**                       | **不允许**                         |
+| **是否允许 `NULL`**         | **不允许**                       | **允许 `NULL`**                    |
+| **一张表可以有几个**        | **只能有一个主键**               | **可以有多个唯一键**               |
+| **是否自动具有 `NOT NULL`** | **是**                           | **否**                             |
+| **常见用途**                | **用户编号、订单编号、商品编号** | **手机号、邮箱、身份证号、用户名** |
+| **InnoDB 中的特殊作用**     | **默认作为聚簇索引**             | **一般作为唯一二级索引**           |
+
+**效果上看：**
+
+​	**PRIMARY KEY = UNIQUE + NOT NULL**
+
+​	**但主键不仅仅是两个约束的组合，它还承担着标识整行记录的作用。**
+
+**主键是表中记录的唯一身份标识，不能为 `NULL`，一张表只能有一个；**
+
+**唯一键只负责保证数据不重复，可以允许 `NULL`，一张表可以有多个。**
+
+**区别： **
+
+​	**主键负责标识记录**
+
+​	**唯一键负责保证业务数据不重复**
+
+
+
+**5.8 外键**
+
+**学生表，班级表**
+
+```mysql
+mysql> desc class;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| id    | int(11)     | NO   | PRI | NULL    |       |
+| name  | varchar(32) | NO   |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> 
+mysql> 
+mysql> 
+mysql> 
+mysql> create table stu(
+    -> id int unsigned primary key,
+    -> name varchar(20) not null,
+    -> telephone varchar(32) unique key,
+    -> class_id int ,
+    -> foreign key(class_id) references class(id)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> 
+```
+
+**表和表之间的约束信息。**
+
+
+
+**本表中的某个字段，必须引用另一张表中的主键或唯一键。**
+
+```
+FOREIGN KEY        外键
+(class_id)         本表的字段
+REFERENCES         引用
+class(id)          class 表中的 id 字段
+```
+
+**外键写自己，引用写父表；先建父表，再建子表；先删子表，再删父表。**
+
+
+
+## 6基本查询
+
+**CRUD**
+
+ **6.1insert**
+
+```mysql
+insert into t22(id, sn, name, qq) values(2, 1, '张三', '2225');
+```
+
+**insert：左边列属性，右边列属性的值。**
+
+**不写属性的话，默认全插入。**
+
+**省略的话，主键自增可以不指定。它会自己增加的，**
+
+```mysql
+insert into t22(id, sn, name, qq) values(12, 126, '曹操', '25'),(14, 13, '孙权' ,'wee');
+```
+
+**一次多行，注意逗号分开的。**
+
+
+
+**主键或者唯一键冲突了。**
+
+```mysql
+insert into t22(id, sn, name, qq) values(15, 12, '诸葛亮dddd', '1100') on duplicate key update sn='14', name='诸葛亮dddd', qq='1100';
+```
+
+**注意更新的值，也不能和其它值进行冲突的。**
+
+
+
+**替换**
+
+**insert 换成 replace。**
+
+
+
+
+
+**6.2 retrive**
+
+**select语句。**
+
+```mysql
+select * from tb_name;     // 不推荐使用的
+select 列名1, 列明2,,, from tb_name;   // 可以按照自己指定的顺序进行筛选
+select math 数学, chinese 语文, math+chinese+english 总分 from exam_result; // select可以计算表达式的
+select distinct * from tb_name // 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

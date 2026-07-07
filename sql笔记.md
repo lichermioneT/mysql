@@ -319,6 +319,138 @@ create table t11(
 
 
 
+**5.5 主键约束**
+
+**主键：primary key用来唯一的约束该字段里面的数据，不能重复，不能为空，一张表中最多只能有一个**
+
+**主键；主键所在的列通常是整数类型。**
+
+**主键约束默认就是 非空的**
+
+```mysql
+update t17 set name = '刘表' where id = 2;  //  主键存在方便更新。
+alter table t17 drop primary key;  因为主键一张表一个，不要告诉我哪一个列的。
+alter table t17 add primary key(id);  注意建表之前就使用 主键。
+delete from t17 where name = '刘备';
+```
+
+
+
+**复合主键**
+
+```mysql
+mysql> create table t18(
+    -> id int unsigned,
+    -> coures char(10) comment '课程',
+    -> score tinyint unsigned default 60 comment '成绩',
+    -> primary key(id, coures)  // 复合主键，最后指定就行了。
+    -> );
+```
+
+**复合主键的语法是：在最后面进行指示。约束的条件只需要有一个不一样就行了的。**
+
+
+
+**5.6自增长**
+
+**auto_increment：当对应的字段，不给值，会自动的被系统触发，系统会从当前字段中已经有的最大值 +1操作，得到一个新的不同的值。**
+
+**通常和主键搭配使用，作为逻辑主键。**
+
+**自增长的特点: 任何一个字段要做自增长，前提是本身是一个索引（key一栏有值）** 
+
+**自增长字段必须是整数** 
+
+**一张表最多只能有一个自增长**
+
+
+
+**设定起始值的**
+
+```mysql
+create table t20( 
+    id int primary key auto_increment, 
+    name varchar(20) not null 
+    )auto_increment = 55;
+```
+
+
+
+**5.7唯一键**
+
+| 对比项                      | 主键约束 `PRIMARY KEY`           | 唯一键约束 `UNIQUE`                |
+| --------------------------- | -------------------------------- | ---------------------------------- |
+| **主要作用**                | **唯一标识表中的一条记录**       | **保证某列或某组列的数据不重复**   |
+| **是否允许重复**            | **不允许**                       | **不允许**                         |
+| **是否允许 `NULL`**         | **不允许**                       | **允许 `NULL`**                    |
+| **一张表可以有几个**        | **只能有一个主键**               | **可以有多个唯一键**               |
+| **是否自动具有 `NOT NULL`** | **是**                           | **否**                             |
+| **常见用途**                | **用户编号、订单编号、商品编号** | **手机号、邮箱、身份证号、用户名** |
+| **InnoDB 中的特殊作用**     | **默认作为聚簇索引**             | **一般作为唯一二级索引**           |
+
+
+
+**5.8 外键**
+
+**外键写自己，引用写父表；先建父表，再建子表；先删子表，再删父表。**
+
+```mysql
+mysql> desc class;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| id    | int(11)     | NO   | PRI | NULL    |       |
+| name  | varchar(32) | NO   |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> 
+mysql> 
+mysql> 
+mysql> 
+mysql> create table stu(
+    -> id int unsigned primary key,
+    -> name varchar(20) not null,
+    -> telephone varchar(32) unique key,
+    -> class_id int ,
+    -> foreign key(class_id) references class(id)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> 
+```
+
+```
+FOREIGN KEY        外键
+(class_id)         本表的字段
+REFERENCES         引用
+class(id)          class 表中的 id 字段
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
