@@ -283,6 +283,8 @@ create table t11(
 
 **not null 非空的。**
 
+**注意：数据库默认字段基本都是字段为空，但是实际开发时，尽可能保证字段不为空，因为数据为空没办 法参与运算。**
+
 
 
 **5.2 默认值**
@@ -329,8 +331,8 @@ create table t11(
 
 ```mysql
 update t17 set name = '刘表' where id = 2;  //  主键存在方便更新。
-alter table t17 drop primary key;  因为主键一张表一个，不要告诉我哪一个列的。
-alter table t17 add primary key(id);  注意建表之前就使用 主键。
+alter table t17 drop primary key;           //  因为主键一张表一个，不要告诉我哪一个列的。
+alter table t17 add primary key(id);         // 注意建表之前就使用 主键。
 delete from t17 where name = '刘备';
 ```
 
@@ -428,6 +430,31 @@ class(id)          class 表中的 id 字段
 ```
 
 
+
+## 6查询
+
+**CURD**
+
+**6.1 insert**
+
+```mysql
+insert into t22(id, sn, name, qq) values(2, 1, '张三', '2225'); // 全部指定列名
+insert into t22 values(2, 1, '张三', '2225'); // 全部不指定列名，默认全插入
+insert into t22(id, sn, name, qq) values(12, 126, '曹操', '25'),(14, 13, '孙权' ,'wee'); // 多行插入，注意括号
+
+```
+
+**查看自增约束的数字**
+
+```mysql
+show create tb_name \G
+```
+
+**自增约束可以不指定，会使用默认的下一个值。**
+
+
+
+**更新**
 
 
 

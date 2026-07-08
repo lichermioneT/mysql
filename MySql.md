@@ -767,7 +767,135 @@ select * from tb_name;     // 不推荐使用的
 select 列名1, 列明2,,, from tb_name;   // 可以按照自己指定的顺序进行筛选
 select math 数学, chinese 语文, math+chinese+english 总分 from exam_result; // select可以计算表达式的
 select distinct * from tb_name // 
+
+select  chinese 语文, math 数学, english+ 10 英语 from exam_result;
 ```
+
+**从命名可以带as， 也可以不带as。**
+
+```mysql
+select distinct math from exam_result; // 去重
+```
+
+
+
+**where子句**
+
+![image-20260708110749462](picture/image-20260708110749462.png)
+
+
+
+**select先查全部的，然后where子句进行筛选的。**
+
+```mysql
+语文成绩在 [80, 90] 分的同学及语文成绩
+select name, chinese from exam_result where chinese >= 80 and chinese <= 90; // 并且就是 and
+select name, chinese from exam_result where chinese between 80 and 90;  // between and 闭区间的
+```
+
+```mysql
+数学成绩是 58 或者 59 或者 98 或者 99 分的同学及数学成绩
+select name, math from exam_result where math=58 or math=59 or math=98 or math=99; // or
+select name, math from exam_result where math in(58,59,98,99); // 指定一个
+```
+
+```mysql
+ 姓孙的同学 及 孙某同学
+select name from exam_result where  name like '孙%'; // %任意字符的
+select name from exam_result where  name like '孙_'; // 任意一个字符，一个是一个字符的
+```
+
+```mysql
+语文成绩好于英语成绩的同学
+select name, chinese, english from exam_result where chinese > english;
+```
+
+```mysql
+ 总分在 200 分以下的同学
+ select name, chinese+english+math 总分 from exam_result where chinese + math + english < 200;
+```
+
+```mysql
+ select name, chinese+english+math 总分 from exam_result where chinese + math + english < 200;
+ 3                                      1                2
+ 1.先找到表
+ 2.筛选的条件
+ 3.展示
+```
+
+**重命名：数据已经筛选出来了的。**
+
+```mysql
+ 语文成绩 > 80 并且不姓孙的同学
+select name, chinese from exam_result where chinese > 80 and name not like '孙%';
+```
+
+```mysql
+孙某同学，否则要求总成绩 > 200 并且 语文成绩 < 数学成绩 并且 英语成绩 > 80
+select name, chinese, math, english from exam_result where name like '孙_' or 
+chinese + math + english > 200 and chinese < math and english > 80;
+
+```
+
+**nulll的查询**
+
+**is null, is not null**
+
+
+
+**order by**
+
+**mysql默认升序的。**
+
+**结果排序**
+
+```mysql
+同学及数学成绩，按数学成绩升序显示
+ 同学及 qq 号，按 qq 号排序显示
+select name, math from exam_result order by math asc;
+```
+
+**null比任何值都小的**
+
+```mysql
+查询同学各门成绩，依次按 数学降序，英语升序，语文升序的方式显示
+select math, english, chinese from exam_result order by math desc, english desc, chinese asc;
+```
+
+**前面的数据一样的话，才会按照后面的顺序进行排序。**
+
+```mysql
+ 查询同学及总分，由高到低
+ select name, chinese+math+english total from exam_result order by chinese+math+english desc;
+ 2 									  1				 3		
+ select name, chinese+math+english total from exam_result order by total desc;
+```
+
+**这里为什么能够使用别名呢？ 1.首先拿出 2.然后展示出来  3.然后按照顺序展示的。**
+
+**数据先给你，然后在排序的。**
+
+```mysql
+查询姓孙的同学或者姓曹的同学数学成绩，结果按数学成绩由高到低显示
+select name, math from exam_result where name like '孙%' or name like '曹%' order by math desc;
+select name, math as 数学 from exam_result where name like '孙%' or name like '曹%' order by 数学 desc;
+```
+
+**数据先给你，然后在排序的。**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
