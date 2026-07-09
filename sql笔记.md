@@ -456,11 +456,142 @@ show create tb_name \G
 
 **更新**
 
+ ```
+ INSERT INTO 表名(字段1, 字段2, ...)
+ VALUES(值1, 值2, ...)
+ ON DUPLICATE KEY UPDATE
+     字段1 = 新值,
+     字段2 = 新值;
+ ```
+
+```
+没有主键/唯一键冲突：直接 INSERT
+发生主键/唯一键冲突：DELETE 旧记录，再 INSERT 新记录
+```
+
+```
+UPDATE：修改原记录
+ON DUPLICATE KEY UPDATE：插入失败则修改原记录
+REPLACE：插入失败则删除原记录，再重新插入
+```
 
 
 
+**6.2 select**
+
+**select**
+
+```mysql
+select * from exam_result;  // 取出整个表的结构
+select name, chinese from exam_result;   // 取出指定列的数据
+select name as 姓名, chinese as 语文, math as 数学,  english as 英语 from exam_result; // 取出指定列，然后指定别名  as可以省略的
+select distinct math from exam_result;    // math 去重
+select distinct math, name from exam_result;  // math + name 去重
+select distinct math + 2, name from exam_result;   // 可以进行计算的取出的数据。
+```
+
+```mysql
+SELECT * FROM tb_name;
+1.先确定从哪张表读取数据；
+2.再决定查询结果中显示哪些字段。
+```
 
 
+
+**where子句**
+
+```mysql
+语文成绩在 [80, 90] 分的同学及语文成绩
+select * from employee where salary >= 10000 and salary <= 12000;
+select * from employee where salary between 10000 and 12000;   // between and 是闭区间的
+```
+
+```mysql
+数学成绩是 58 或者 59 或者 98 或者 99 分的同学及数学成绩
+select * from employee where age=25 or age=43 or age=35 or age=36;
+select * from employee where age in(25,43,35,36);             // in 可以进行列举的
+```
+
+```mysql
+ 姓孙的同学 及 孙某同学
+select * from employee where name like '孙%';
+select * from employee where name not like '孙%';
+select * from employee where name like '孙_';
+select * from employee where name not like '孙_'; // %任意字符 _任意一个字符 。 注意区别
+```
+
+```mysql
+语文成绩好于英语成绩的同学
+select name, chinese, english from exam_result where chinese > english;
+```
+
+```mysql
+ 总分在 200 分以下的同学
+ select name, chinese+english+math 总分 from exam_result where chinese + math + english < 200;
+```
+
+```mysql
+ select name, chinese+english+math 总分 from exam_result where chinese + math + english < 200;
+ 3                                      1                2
+ 1.先找到表
+ 2.筛选的条件
+ 3.展示
+```
+
+```
+1. FROM：确定从哪张表中读取数据。
+2. WHERE：根据条件对表中的行进行判断和筛选。
+3. SELECT：选择需要展示的字段，形成最终查询结果。
+```
+
+**nulll的查询 is null, is not null**
+
+
+
+**order by 排序**
+
+```mysql
+安装年龄排序
+select * from employee order by age asc;
+select * from employee order by age desc;
+```
+
+```mysql
+// **前面的数据一样的话，才会按照后面的顺序进行排序。**
+select * from employee order by status asc, salary asc;
+```
+
+```mysql
+select name, chinese+math+english total from exam_result order by total desc;
+```
+
+**这里为什么能够使用别名呢？ 1.首先拿出 2.然后展示出来  3.然后按照顺序展示的。**
+
+```
+1. FROM exam_result
+   找到数据表
+2. WHERE name LIKE '孙%' OR name LIKE '曹%'
+   筛选姓孙或姓曹的学生
+3. SELECT name, math
+   只展示姓名和数学成绩
+4. ORDER BY math DESC
+   按数学成绩从高到低排序
+```
+
+
+
+**limit  分页查询**
+
+```mysql
+// 第一到第五一个
+select * from exam_result limit 5; // 表开始，连续读取五行
+
+// 第二到后面五个
+select * from exam_result limit 2, 5; // 从二开始，连续读取五行
+// 注意开始位置，下标默认是从零开始的
+
+select * from exam_result limit 3 offset 2; // offset表示起始位置，前面的就是步长
+```
 
 
 

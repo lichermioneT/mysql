@@ -768,7 +768,7 @@ select 列名1, 列明2,,, from tb_name;   // 可以按照自己指定的顺序�
 select math 数学, chinese 语文, math+chinese+english 总分 from exam_result; // select可以计算表达式的
 select distinct * from tb_name // 
 
-select  chinese 语文, math 数学, english+ 10 英语 from exam_result;
+select  chinese 语文, math 数学, english + 10 英语 from exam_result;
 ```
 
 **从命名可以带as， 也可以不带as。**
@@ -885,37 +885,177 @@ select name, math as 数学 from exam_result where name like '孙%' or name like
 
 
 
+**分页查询**
+
+```mysql
+// 第一到第五一个
+select * from exam_result limit 5; // 表开始，连续读取五行
+// 第二到后面五个
+select * from exam_result limit 2, 5; // 从二开始，连续读取五行
+// 注意开始位置，下标默认是从零开始的
+
+select * from exam_result limit 3 offset 2; // offset表示起始位置，前面的就是步长
+```
+
+**建议：对未知表进行查询时，最好加一条 LIMIT 1，避免因为表中数据过大，查询全表数据导致数据库卡死 按 id 进行分页，**
+
+**每页 3 条记录，分别显示 第 1、2、3 页**
+
+**需要有数据才能排序， 只有数据准备好了，你才能显示， limit的本质功能是显示。**
+
+
+
+**更新 update**
+
+**对查询到的结果进行列值更新**
+
+```mysql
+ 将孙悟空同学的数学成绩变更为 80 分
+ update exam_result set math = 80 where name = '孙悟空';  // 注意不加where子句，就是整列
+ 
+ 将曹孟德同学的数学成绩变更为 60 分，语文成绩变更为 70 分
+ update exam_result set math = 60, chinese = 70 where name = '曹孟德';
+ 
+ 将总成绩倒数前三的 3 位同学的数学成绩加上 30 分
+ update exam_result set math = math + 30  order by chinese+math+english limit 3;
+ 
+ 将所有同学的语文成绩更新为原来的 2 倍
+ UPDATE exam_result SET chinese = chinese * 2
+```
 
 
 
 
 
+**删除 delete**
+
+```mysql
+删除孙悟空同学的考试成绩
+delete from exam_result where name='孙悟空';
+
+delete from exam_result order by chinese+math+english asc limit 1;
+```
+
+**delete是删除表的数据，表的数据结构还在的。DELETE FROM for_delete;**
+
+**截断表**
+
+```
+TRUNCATE [TABLE] table_name
+```
+
+```
+1. 只能对整表操作，不能像 DELETE 一样针对部分数据操作；
+2. 实际上 MySQL 不对数据操作，所以比 DELETE 更快，但是TRUNCATE在删除数据的时候，并不经过真正的事物，所以无法回滚
+3. 会重置 AUTO_INCREMENT 项
+```
+
+**bin redo  undo log.**
 
 
 
+**6.5 插入查询结果**
+
+**案例：删除表中的的重复复记录，重复的数据只能有一份**
+
+**1.筛选出数据的**
+
+**2.创建一模一样的表、**
+
+**3.去重插入**
+
+```mysql
+ create table no_duplicate_table like duplicate_table; // 创建一样的表
+ insert into no_duplicate_table(id,name) select distinct * from duplicate_table; // 插入，全列插入可以省略的
+ insert into no_duplicate_table select distinct * from duplicate_table;
+ 
+ alter table duplicate_table rename to old_duplicate_table // 备份 
+ alter table no_duplicate_table rename to duplicate_table // 修改
+```
+
+**rename:等一切就绪了，统一放入，更新，生效。**
 
 
 
+**6.6 聚合函数**
+
+**总数，求和，平均值，最大值，最小值。 不是数数字没有意义的**
+
+**count函数不会统计NULL的**
+
+```mysql
+select count(*) from employee;
+select count(name) from employee;
+select count(city) from employee;
+select count(name) as 姓名 from employee;  // 可以重命名的
+select count(distinct bonus) from employee; // 先对math去重了，然后在统计的
+```
+
+**sum**
+
+```mysql
+select sum(salary) from employee;
+select sum(salary)/ count(*) from employee;
+select sum(salary) from employee where salary < 10000;
+
+select count(*) from employee where salary < 10000;
+```
+
+**avg**
+
+```mysql
+ select avg(salary) from employee;
+```
+
+**min max**
+
+```mysql
+select max(salary) from employee;
+select min(salary) from employee;
+```
 
 
 
+**6.7 group by子句的使用**
+
+```mysql
+显示每个部门的每种岗位的平均工资和最低工资
+select department_id, max(salary), avg(salary) from employee group by department_id;
+select department_id, max(salary), min(salary), avg(salary) from employee group by department_id;
+```
+
+**1.先分组，分组了之后才能够进行聚合的。**
+
+**2.指定列名，实际分组，是该列的不同数据来进行分组的**
+
+**3.分组的条件，组内的条件相同， 可以被聚合压缩。**
+
+**4.分组，不就是把一组按照条件拆成多个组， 进行各自组内的统计。**
+
+**4.1 分组（分表） 不就是把一张表按照条件  在逻辑上拆成了多个子表。  然后分别对各自的子表，聚合统计的。**
+
+```mysql
+select gender, count('男'), count('女') from employee group by gender;  //xxxx
+SELECT gender, COUNT(*) AS 人数 FROM employee GROUP BY gender;
+```
+
+**1.聚合条件，聚合条件**
 
 
 
+![image-20260709214312505](picture/image-20260709214312505.png)
+
+![image-20260709214304142](picture/image-20260709214304142.png)
+
+**having只是聚合之后的筛选的。**
 
 
 
+**where子句的区别：具体的 具体的任意列进行条件筛选。 **
 
+**having对分组聚合之后的结果 进行条件筛选。**
 
-
-
-
-
-
-
-
-
-
+**mysql一切皆表，只要能够处理一张单表，我们所有mysql的场景 都能够用统一的场景进行处理的。**
 
 
 
