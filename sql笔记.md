@@ -100,6 +100,10 @@ birthday date comment '生日'  ) character set utf8mb4 collate utf8mb4_general_
 
 **表的：字符集，校验集，存储引擎。**
 
+**创建表的时候，信息是一行的，变量名，属性，约束等等。  也有可能约束在最后：例如复合主键的约束。**
+
+**查询的时候：信息就是一列的。**
+
 **删除表：**
 
 ```mysql
@@ -119,7 +123,7 @@ desc users2;
 **表的创建语句：**
 
 ```mysql
-show create table users2 \G
+show create table users2 \G;  // 也可以看到自增主键的下一个值的
 ```
 
 
@@ -159,7 +163,7 @@ alter table user change name xingming varchar(30);
 ```mysql
 alter table tb_name 
 rename to  // 新名称
-add        // 添加新的一行
+add        // 添加新的一行，这是创建
 drop       // 删除一行
 modify     // 修改属性，列名称不变
 change     // 修改名字和属性
@@ -595,19 +599,462 @@ select * from exam_result limit 3 offset 2; // offset表示起始位置，前面
 
 
 
+**update 更新**
+
+```mysql
+update employee set email='lichermionex@gmail.com' where  name='高峰';
+update employee gender='女', age=46 where id = 14;
+update employee set salary = salary + 300 order by salary limit  3; // 先筛选出来，然后在更新 注意执行的顺序
+update employee set salary = salary * 2;  // 没有条件，就是整个表进行更新的。
+```
 
 
 
+**delete 删除**
+
+```mysql
+delete from employee where id = 1; // 删除只需要指定一行的一个信息就行了
+delete from employee order by salary limit 1; // 先筛选出来，然后删除的
+
+delete from stu; // 删除这个表，注意
+```
 
 
 
+**案例：删除表中的的重复复记录，重复的数据只能有一份**
+
+```mysql
+ create table no_duplicate_table like duplicate_table; // 创建一样的表
+ insert into no_duplicate_table(id,name) select distinct * from duplicate_table; // 插入，全列插入可以省略的
+ insert into no_duplicate_table select distinct * from duplicate_table;
+ 
+ alter table duplicate_table rename to old_duplicate_table // 备份 
+ alter table no_duplicate_table rename to duplicate_table // 修改
+```
+
+**创建一张格式类似的表，然后把旧表筛选的结果，插入到新表，然后改名的**
 
 
 
+**聚合函数**
+
+```mysql
+select count(*) from employee;
+select count(bonus) from employee;
+select count(id) from employee;
+select count(gender) from employee;
+select count(distinct gender) from employee;
+```
+
+```mysql
+select sum(salary) from employee;
+select sum(salary)/count(*) from employee;
+select count(salary) from employee where salary < 15000
+```
+
+```mysql
+select count(salary) from employee where salary < 15000;
+select avg(salary) from employee;
+```
+
+```mysql
+select max(salary) from employee;
+select min(salary) from employee;
+```
 
 
 
+**group by**
 
+```mysql
+select department_id, count(*) as 部门人数 from employee group by department_id;
+3.展示分组，分组的统计	  				 1.先拿数据     2.分组了		
+```
+
+```mysql
+select gender, count(gender) from employee group by gender;
+3.展示分组			         1.拿数据       2.分组
+```
+
+```mysql
+select department_id, avg(salary) from employee group by department_id;
+3.展示分组，每一组的信息             1.拿数据      2.分组
+```
+
+```mysql
+select department_id, max(salary), min(salary) from employee group by department_id;
+1.按照部门分组，分成了对个表了
+2.然后统计每张表的信息
+3.展示
+```
+
+```mysql
+select department_id, sum(salary) from employee group by deparetment_id;
+```
+
+**group by就是按照信息进行分组的。**
+
+
+
+**1部门  2性别**
+
+```mysql
+select department_id, gender, count(*)  from employee group by department_id, gender;
+3.展示。3.1部门一样 11 12 21 22           1.拿数据了             2.按照部门分组，然后就是性别了
+```
+
+**having子句进行判断的**
+
+```mysql
+select department_id, count(*) from employee group by department_id having count(*) > 2;
+```
+
+```mysql
+select department_id, sum(salary) as sum_sal from employee group by department_id having sum(salary) > 25000;
+select department_id, sum(salary) as sum_sal from employee group by department_id having sum_sal > 25000;
+```
+
+
+
+## 7函数
+
+**日期，时间，时间戳**
+
+```mysql
+select current_date();  // 日期
+select current_time();  // 时间
+select current_timestamp();  // 时间戳，但是显示的是上面的两个
+```
+
+**日期截取函数**
+
+```mysql
+select date('2000-2-10 1:1:1');
+select date(now());
+
+// 虽然都有可以插入，但是不合规的
+select date(current_date());
+select date(current_time());
+select date(current_timestamp());
+```
+
+**日期加减**
+
+```mysql
+select date_add('2050-1-1', interval 10 day);
+select date_add('2050-1-1', interval 50 day);
+select date_add(now, interval 10 day);
+select date_add(now(), interval 10 minute);
+select date_add(now(), interval 10 second);
+```
+
+**判断日期的差距**
+
+```mysql
+select datediff(now(), '2000-2-10');
+```
+
+
+
+**7.2 字符串函数**
+
+**charset：字符串函数**
+
+```mysql
+select charset('abc');
+select charset(1233);
+select charset(salary) from employee;
+select charset(name) from employee;
+```
+
+**concat：拼接字符函数**
+
+```mysql
+select concat('a', 'c', 'fffffffffffffffffff') string;
+select concat('a', 'c', 'fffffffffffffffffff', 123, 3.3123) string; // 数字也可以拼接的
+```
+
+**instr：子字符串函数的**
+
+```mysql
+select instr('aaaaaaaaaaabd', 'a');
+select instr('aaaaaaaaaaabd', 'abd');
+// 注意失败返回零的
+```
+
+**ucase, lcase：大小写转换**
+
+```mysql
+select ucase('lichermionex');
+select lcase('SFDFFFCDFFASFSAFSDSCDFS3434545...;;;');
+```
+
+**left：右边字符串**
+
+```mysql
+select left('lichermione', 3);  // 返回的是字符串
+select right('lichermionezzz', 3); // 
+```
+
+**length：字符串长度函数**
+
+```mysql
+select length('lichermionex');
+```
+
+**replace：查找替换函数**
+
+
+
+**strcmp：字符串比较函数**
+
+
+
+**substring：求子串**
+
+
+
+**ltrim：前后空格字符串去处函数**
+
+
+
+**获取表格某列的charset**
+
+```mysql
+select charset(id) from employee; // 里面填表的字段。 
+select charset('abc'); // 查询数据就行了
+// 1.使用的场景，乱码的时候查编码信息的。
+```
+
+**表格字符串的拼接**
+
+```mysql
+select concat(name,'的薪水:', salary) from employee;  // 表的字段信息和需要字符拼接
+// 1.查询的信息不想用表格显示的时候，使用的
+```
+
+**字符串的字节长度**
+
+```mysql
+mysql> select length(mail) from employee;
+select name, length(name) from employee;  // length 字节，字节数。 一个字符可能占多个字节
+```
+
+**字符串替换**
+
+```mysql
+select city, replace(city, '上海', 'shanghai'), from employee;  // 查询的信息进行替换，不会改变原来的信息的
+```
+
+**子字符串的截取**
+
+```mysql
+select substr(hire_date,1,4) from employee;  // 字符串是从1开始的。
+select substr(hire_date,6) from employee;    // 省略就是到末尾的
+```
+
+**字符串前后的空格**
+
+```mysql
+select ltrim('        xxxxxxx                  ');
+select rtrim('        xxxxxxx                  ');
+select trim('         xxxxxxx                  ');
+```
+
+**7.3 数学函数**
+
+```mysql
+// 绝对值函数
+select abs(-1110);
+select abs(11110);
+
+// 十进制转换二进制,16进制的
+select bin(16); // 只能是整数的
+select hex(16); //
+
+// 任意进制的转换
+select conv(10, 10 , 2);
+select conv(10, 10 , 16);
+
+// 取整函数
+select ceiling(12.00000000000000001);
+select floor(12.00000000000000001);
+select ceiling(-12.00000000000000001);
+select floor(-12.00000000000000001);
+// 想象成数轴就行了的。  向上就是右边，向下就是左边的。
+
+// 小数位数函数
+select format(3.141567, 2);
+select format(3.141567, 21);
+
+// 模运算
+select mod(10, 3);
+
+ // 随机数
+ select rand();
+```
+
+**7.4 其它函数**
+
+```mysql
+用户函数
+select user();
+摘要的
+select md5('lichermionex');
+当前数据
+select database();
+加密函数
+select password('root');
+
+select ifnull('aaa', 'bbbb');
+select ifnull(null, 'bbbb');
+```
+
+
+
+## 8. 复合查询
+
+**8.1 基本查询回顾**
+
+**查询工资高于500或岗位为MANAGER的雇员，同时还要满足他们的姓名首字母为大写的J**
+
+```mysql
+select * from EMP where (sal > 500 or  job='MANAGER') and ename like 'J%';
+// like用来模糊匹配的，通配匹配的
+```
+
+**按照部门号升序而雇员的工资降序排序**
+
+```mysql
+select deptno, sal from EMP order by deptno asc, sal desc;
+// 排序，先一样的，然后在按照后面的进行排序的
+```
+
+**使用年薪进行降序排序**
+
+```mysql
+select ename, sal*12 + ifnull(comm, 0) as 年薪  from EMP  order by 年薪 desc;
+// null不参与计算的。
+```
+
+**显示工资最高的员工的名字和工作岗位**
+
+```mysql
+// 子查询
+select max(sal) from EMPl;
+select ename, job , sal, sal from EMP where sal = (select max(sal) from EMP);
+2.名字，工作岗位                              1.最高工资
+
+select ename, job , sal from EMP order by sal desc limit 1;
+// 先找到工资最高的员工
+```
+
+**显示工资高于平均工资的员工信息**
+
+```mysql
+// 子查询
+select ename ,sal from EMP where sal > (select avg(sal) from EMP);
+// 2.查查询                 	   2.子查询的信息
+```
+
+**显示每个部门的平均工资和最高工资**
+
+```mysql
+select deptno, avg(sal), max(sal) from EMP group by deptno;
+// 2.每个部门， 部门的平均工资，最高工资       1.每个部门
+```
+
+**显示平均工资低于2200的部门号和它的平均工资**
+
+```mysql
+select deptno, avg(sal) from EMP group by deptno having avg(sal) < 2200;
+2.每个组的平均工资                 1.分组           3.平均工资低于2200
+```
+
+**显示每种岗位的雇员总数，平均工资**
+
+```mysql
+select deptno, count(*), avg(sal) from EMP group by deptno;
+```
+
+
+
+**8.2 多表查询**
+
+**显示雇员名、雇员工资以及所在部门的名字因为上面的数据来自EMP和DEPT表，因此要联合查询**
+
+```
++-------+--------+-----------+------+------------+---------+---------+--------+
+| empno | ename  | job       | mgr  | hiredate   | sal     | comm    | deptno |
++-------+--------+-----------+------+------------+---------+---------+--------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |
+```
+
+```
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     10 | ACCOUNTING | NEW YORK |
+|     20 | RESEARCH   | DALLAS   |
+|     30 | SALES      | CHICAGO  |
+|     40 | OPERATIONS | BOSTON   |
++--------+------------+----------+
+```
+
+```
++-------+--------+-----------+------+------------+---------+---------+--------+--------+------------+----------+
+| empno | ename  | job       | mgr  | hiredate   | sal     | comm    | deptno | deptno | dname      | loc      |
++-------+--------+-----------+------+------------+---------+---------+--------+--------+------------+----------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |     10 | ACCOUNTING | NEW YORK |
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |     20 | RESEARCH   | DALLAS   |
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |     30 | SALES      | CHICAGO  |
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |     40 | OPERATIONS | BOSTON   |
+```
+
+```
+select  * from EMP, DEPT; // 第一张表的每一个数据和第二张表的数据进行穷举的
+select  * from EMP, DEPT where EMP.deptno= DEPT.deptno; // 筛选掉无意义的数据
+select ename, sal, dname from EMP, DEPT where EMP.deptno= DEPT.deptno; // 完成任务的
+显示雇员名、雇员工资以及所在部门的名字因为上面的数据来自EMP和DEPT表，因此要联合查询
+```
+
+**显示部门号为10的部门名，员工名和工资**
+
+```mysql
+select EMP.deptno, ename, sal, dname from EMP, DEPT where EMP.deptno= DEPT.deptno and EMP.deptno=10;
+```
+
+**显示各个员工的姓名，工资，及工资级别**
+
+```mysql
+select ename, sal, grade from EMP, SALGRADE where EMP.sal between losal and hisal;
+```
+
+
+
+**8.3 自连接**
+
+```mysql
++-------+--------+-----------+------+------------+---------+---------+--------+
+| empno | ename  | job       | mgr  | hiredate   | sal     | comm    | deptno |
++-------+--------+-----------+------+------------+---------+---------+--------+
+         
+```
+
+```mysql
+select * from SALGRADE as t1, SALGRADE as t2; // 注意需要重命名的
+```
+
+```mysql
+显示员工FORD的上级领导的编号和姓名（mgr是员工领导的编号--empno）
+select ename, empno from EMP  where empno=(select mgr from EMP where ename='FORD');
+
+select e2.ename, e2.empno from EMP e1, EMP e2 where e1.ename='FORD' and e1.mgr = e2.empno;
+```
+
+
+
+**8.4 子查询**
 
 
 

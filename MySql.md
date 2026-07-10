@@ -1059,6 +1059,441 @@ SELECT gender, COUNT(*) AS 人数 FROM employee GROUP BY gender;
 
 
 
+## 7函数
+
+**7.1 日期函数**
+
+```mysql
+select current_date(); // 日期
+select current_time(); // 时间
+select current_timestamp();  // 时间戳
+select now(); // 当前时间
+```
+
+```mysql
+ select date('1949-10-1 00:00:00');
+ select date(now());
+```
+
+```mysql
+select date_add('2050-1-1', interval 10 day);
+select date_add('2050-1-1', interval 50 day);
+select date_add(now, interval 10 day);
+select date_add(now(), interval 10 minute);
+select date_add(now(), interval 10 second);
+```
+
+```mysql
+select datediff(now(), '2000-2-10');
+```
+
+**date数据类型：年-月-日**
+
+```mysql
+insert into temp(birthday) values(current_date());
+insert into temp(birthday) values(current_time());
+insert into temp(birthday) values(current_timestamp());
+// 底层都是一个函数，只不过显示的不一样的。 但是最好不乱用的。
+```
+
+
+
+```mysql
+select * from msg where date_sub(now(), interval 25 minute) < sendtime;
+// 1.现在的时间，往后移动25分钟
+select * from msg where date_add(sendtime, interval 26 minute) > now();
+```
+
+
+
+**7.2 字符串函数**
+
+**charset：字符串函数**
+
+```mysql
+select charset('abc');
+select charset(1233);
+select charset(salary) from employee;
+select charset(name) from employee;
+```
+
+**concat：拼接字符函数**
+
+```mysql
+select concat('a', 'c', 'fffffffffffffffffff') string;
+select concat('a', 'c', 'fffffffffffffffffff', 123, 3.3123) string; // 数字也可以拼接的
+```
+
+**instr：子字符串函数的**
+
+```mysql
+select instr('aaaaaaaaaaabd', 'a');
+select instr('aaaaaaaaaaabd', 'abd');
+// 注意失败返回零的
+```
+
+**ucase, lcase：大小写转换**
+
+```mysql
+select ucase('lichermionex');
+select lcase('SFDFFFCDFFASFSAFSDSCDFS3434545...;;;');
+```
+
+**left：右边字符串**
+
+```mysql
+select left('lichermione', 3);  // 返回的是字符串
+select right('lichermionezzz', 3); // 
+```
+
+**length：字符串长度函数**
+
+```mysql
+select length('lichermionex');
+```
+
+**replace：查找替换函数**
+
+
+
+**strcmp：字符串比较函数**
+
+
+
+**substring：求子串**
+
+
+
+**ltrim：前后空格字符串去处函数**
+
+
+
+**获取表格某列的charset**
+
+```mysql
+select charset(id) from employee; // 里面填表的字段。 
+select charset('abc'); // 查询数据就行了
+// 1.使用的场景，乱码的时候查编码信息的。
+```
+
+**表格字符串的拼接**
+
+```mysql
+select concat(name,'的薪水:', salary) from employee;  // 表的字段信息和需要字符拼接
+// 1.查询的信息不想用表格显示的时候，使用的
+```
+
+**字符串的字节长度**
+
+```mysql
+mysql> select length(mail) from employee;
+select name, length(name) from employee;  // length 字节，字节数。 一个字符可能占多个字节
+```
+
+**字符串替换**
+
+```mysql
+select city, replace(city, '上海', 'shanghai'), from employee;  // 查询的信息进行替换，不会改变原来的信息的
+```
+
+**子字符串的截取**
+
+```mysql
+select substr(hire_date,1,4) from employee;  // 字符串是从1开始的。
+select substr(hire_date,6) from employee;    // 省略就是到末尾的
+```
+
+**字符串前后的空格**
+
+```mysql
+select ltrim('        xxxxxxx                  ');
+select rtrim('        xxxxxxx                  ');
+select trim('         xxxxxxx                  ');
+```
+
+
+
+**7.3 数学函数**
+
+```mysql
+// 绝对值函数
+select abs(-1110);
+select abs(11110);
+```
+
+```mysql
+// 十进制转换二进制,16进制的
+select bin(16); // 只能是整数的
+select hex(16); //
+```
+
+```mysql
+// 任意进制的转换
+select conv(10, 10 , 2);
+select conv(10, 10 , 16);
+```
+
+```mysql
+// 取整函数
+select ceiling(12.00000000000000001);
+select floor(12.00000000000000001);
+select ceiling(-12.00000000000000001);
+select floor(-12.00000000000000001);
+// 想象成数轴就行了的。  向上就是右边，向下就是左边的。
+```
+
+```mysql
+// 小数位数函数
+select format(3.141567, 2);
+select format(3.141567, 21);
+```
+
+```mysql
+// 模运算
+select mod(10, 3);
+```
+
+```mysql
+ // 随机数
+ select rand();
+```
+
+**7.4 其它函数**
+
+```mysql
+用户函数
+select user();
+摘要的
+select md5('lichermionex');
+当前数据
+select database();
+加密函数
+select password('root');
+
+select ifnull('aaa', 'bbbb');
+select ifnull(null, 'bbbb');
+```
+
+## 8. 复合查询
+
+**8.1 基本查询回顾**
+
+**查询工资高于500或岗位为MANAGER的雇员，同时还要满足他们的姓名首字母为大写的J**
+
+```mysql
+select * from EMP where (sal > 500 or  job='MANAGER') and ename like 'J%';
+// like用来模糊匹配的，通配匹配的
+```
+
+**按照部门号升序而雇员的工资降序排序**
+
+```mysql
+select deptno, sal from EMP order by deptno asc, sal desc;
+// 排序，先一样的，然后在按照后面的进行排序的
+```
+
+**使用年薪进行降序排序**
+
+```mysql
+select ename, sal*12 + ifnull(comm, 0) as 年薪  from EMP  order by 年薪 desc;
+// null不参与计算的。
+```
+
+**显示工资最高的员工的名字和工作岗位**
+
+```mysql
+// 子查询
+select max(sal) from EMPl;
+select ename, job , sal, sal from EMP where sal = (select max(sal) from EMP);
+2.名字，工作岗位                              1.最高工资
+
+select ename, job , sal from EMP order by sal desc limit 1;
+// 先找到工资最高的员工
+```
+
+**显示工资高于平均工资的员工信息**
+
+```mysql
+// 子查询
+select ename ,sal from EMP where sal > (select avg(sal) from EMP);
+// 2.查查询                 	   2.子查询的信息
+```
+
+**显示每个部门的平均工资和最高工资**
+
+```mysql
+select deptno, avg(sal), max(sal) from EMP group by deptno;
+// 2.每个部门， 部门的平均工资，最高工资       1.每个部门
+```
+
+**显示平均工资低于2200的部门号和它的平均工资**
+
+```mysql
+select deptno, avg(sal) from EMP group by deptno having avg(sal) < 2200;
+2.每个组的平均工资                 1.分组           3.平均工资低于2200
+```
+
+**显示每种岗位的雇员总数，平均工资**
+
+```mysql
+select deptno, count(*), avg(sal) from EMP group by deptno;
+```
+
+**8.2 多表查询**
+
+**显示雇员名、雇员工资以及所在部门的名字因为上面的数据来自EMP和DEPT表，因此要联合查询**
+
+```
++-------+--------+-----------+------+------------+---------+---------+--------+
+| empno | ename  | job       | mgr  | hiredate   | sal     | comm    | deptno |
++-------+--------+-----------+------+------------+---------+---------+--------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |
+```
+
+```
++--------+------------+----------+
+| deptno | dname      | loc      |
++--------+------------+----------+
+|     10 | ACCOUNTING | NEW YORK |
+|     20 | RESEARCH   | DALLAS   |
+|     30 | SALES      | CHICAGO  |
+|     40 | OPERATIONS | BOSTON   |
++--------+------------+----------+
+```
+
+```
++-------+--------+-----------+------+------------+---------+---------+--------+--------+------------+----------+
+| empno | ename  | job       | mgr  | hiredate   | sal     | comm    | deptno | deptno | dname      | loc      |
++-------+--------+-----------+------+------------+---------+---------+--------+--------+------------+----------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |     10 | ACCOUNTING | NEW YORK |
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |     20 | RESEARCH   | DALLAS   |
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |     30 | SALES      | CHICAGO  |
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |     40 | OPERATIONS | BOSTON   |
+```
+
+```mysql
+select  * from EMP, DEPT; // 第一张表的每一个数据和第二张表的数据进行穷举的
+select  * from EMP, DEPT where EMP.deptno= DEPT.deptno; // 筛选掉无意义的数据
+select ename, sal, dname from EMP, DEPT where EMP.deptno= DEPT.deptno; // 完成任务的
+显示雇员名、雇员工资以及所在部门的名字因为上面的数据来自EMP和DEPT表，因此要联合查询
+```
+
+
+
+**显示部门号为10的部门名，员工名和工资**
+
+```mysql
+select EMP.deptno, ename, sal, dname from EMP, DEPT where EMP.deptno= DEPT.deptno and EMP.deptno=10;
+```
+
+**显示各个员工的姓名，工资，及工资级别**
+
+```mysql
+select ename, sal, grade from EMP, SALGRADE where EMP.sal between losal and hisal;
+```
+
+
+
+**8.3 自连接**
+
+```mysql
++-------+--------+-----------+------+------------+---------+---------+--------+
+| empno | ename  | job       | mgr  | hiredate   | sal     | comm    | deptno |
++-------+--------+-----------+------+------------+---------+---------+--------+
+         
+```
+
+```mysql
+select * from SALGRADE as t1, SALGRADE as t2; // 注意需要重命名的
+```
+
+```mysql
+显示员工FORD的上级领导的编号和姓名（mgr是员工领导的编号--empno）
+select ename, empno from EMP  where empno=(select mgr from EMP where ename='FORD');
+```
+
+```mysql
+select e2.ename, e2.empno from EMP e1, EMP e2 where e1.ename='FORD' and e1.mgr = e2.empno;
+```
+
+
+
+**8.4 子查询**
+
+**8.4.1 单行子查询**
+
+**显示SMITH同一部门的员工**
+
+```mysql
+select * from EMP where deptno = (select deptno from EMP where ename='SMITH');
+2.查询                            2.子查询，SMITH的部门所在
+```
+
+
+
+**8.4.2 多行子查询**
+
+**in关键字；查询和10号部门的工作岗位相同的雇员的名字，岗位，工资，部门号，但是不包含10自 己的**
+
+```mysql
+select ename, job, sal, deptno from EMP where job  in (select job from EMP where deptno=10) and deptno != 10;
+select ename, job, sal, deptno from EMP where job  in (select job from EMP where deptno=10) and deptno <> 10;
+```
+
+
+
+
+
+**8.5 实战OJ**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
