@@ -1076,3 +1076,5 @@ select e2.ename, e2.empno from EMP e1, EMP e2 where e1.ename='FORD' and e1.mgr =
 
 
 
+
+

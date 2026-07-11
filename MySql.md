@@ -1371,12 +1371,19 @@ select deptno, count(*), avg(sal) from EMP group by deptno;
 |  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |     40 | OPERATIONS | BOSTON   |
 ```
 
-```mysql
+````mysql
+**显示雇员名、雇员工资以及所在部门的名字因为上面的数据来自EMP和DEPT表，因此要联合查询**
+```
++-------+--------+-----------+------+------------+---------+---------+--------+
+| empno | ename  | job       | mgr  | hiredate   | sal     | comm    | deptno |
++-------+--------+-----------+------+------------+---------+---------+--------+
+|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800.00 |    NULL |     20 |
+```
 select  * from EMP, DEPT; // 第一张表的每一个数据和第二张表的数据进行穷举的
 select  * from EMP, DEPT where EMP.deptno= DEPT.deptno; // 筛选掉无意义的数据
 select ename, sal, dname from EMP, DEPT where EMP.deptno= DEPT.deptno; // 完成任务的
 显示雇员名、雇员工资以及所在部门的名字因为上面的数据来自EMP和DEPT表，因此要联合查询
-```
+````
 
 
 
@@ -1426,18 +1433,131 @@ select e2.ename, e2.empno from EMP e1, EMP e2 where e1.ename='FORD' and e1.mgr =
 
 ```mysql
 select * from EMP where deptno = (select deptno from EMP where ename='SMITH');
-2.查询                            2.子查询，SMITH的部门所在
+2.查询                            1.子查询，SMITH的部门所在
 ```
-
-
 
 **8.4.2 多行子查询**
 
 **in关键字；查询和10号部门的工作岗位相同的雇员的名字，岗位，工资，部门号，但是不包含10自 己的**
 
 ```mysql
+// 1.子查询多行
+mysql> select distinct job from EMP where deptno=10;
++-----------+
+| job       |
++-----------+
+| MANAGER   |
+| PRESIDENT |
+| CLERK     |
++-----------+
+// 2.查询
+mysql> select ename, job, sal, deptno from EMP where job  in (select job from EMP where deptno=10);
++--------+-----------+---------+--------+
+| ename  | job       | sal     | deptno |
++--------+-----------+---------+--------+
+| SMITH  | CLERK     |  800.00 |     20 |
+| JONES  | MANAGER   | 2975.00 |     20 |
+| BLAKE  | MANAGER   | 2850.00 |     30 |
+| CLARK  | MANAGER   | 2450.00 |     10 |
+| KING   | PRESIDENT | 5000.00 |     10 |
+| ADAMS  | CLERK     | 1100.00 |     20 |
+| JAMES  | CLERK     |  950.00 |     30 |
+| MILLER | CLERK     | 1300.00 |     10 |
++--------+-----------+---------+--------+
+// 3去除部门号
+mysql> select ename, job, sal, deptno from EMP where job  in (select job from EMP where deptno=10) and deptno != 10;
++-------+---------+---------+--------+
+| ename | job     | sal     | deptno |
++-------+---------+---------+--------+
+| SMITH | CLERK   |  800.00 |     20 |
+| JONES | MANAGER | 2975.00 |     20 |
+| BLAKE | MANAGER | 2850.00 |     30 |
+| ADAMS | CLERK   | 1100.00 |     20 |
+| JAMES | CLERK   |  950.00 |     30 |
++-------+---------+---------+--------+
+```
+
+```mysql
 select ename, job, sal, deptno from EMP where job  in (select job from EMP where deptno=10) and deptno != 10;
 select ename, job, sal, deptno from EMP where job  in (select job from EMP where deptno=10) and deptno <> 10;
+```
+
+**all关键字；显示工资比部门30的所有员工的工资高的员工的姓名、工资和部门号**
+
+```mysql
+mysql> select * from EMP where sal > (select max(sal) from EMP where deptno=30);
+	   2.查询					      1.子查询				 
+mysql> select * from EMP where sal > all(select sal from EMP where deptno=30);
+       2.查询                         1.子查询
+```
+
+**any关键字；显示工资比部门30的任意员工的工资高的员工的姓名、工资和部门号（包含自己部门 的员工）**
+
+```mysql
+mysql> select * from EMP where sal > any(select distinct sal from EMP where deptno=30);
+```
+
+
+
+**8.4.3 多列子查询**
+
+**案例：查询和SMITH的部门和岗位完全相同的所有雇员，不含SMITH本人**
+
+```mysql
+select * from EMP  where (deptno, job) = (select deptno, job from EMP where ename='SMITH') and ename <> 'SMITH';
+select * from EMP  where (deptno, job) in (select deptno, job from EMP where ename='SMITH') and ename <> 'SMITH';
+```
+
+**目前子查询都是where子句，充当判断条件**
+
+**mysql一起皆表**
+
+
+
+**8.4.4 在from子句中使用子查询**
+
+**显示每个高于自己部门平均工资的员工的姓名、部门、工资、平均工资**
+
+```mysql
+select * from EMP, (select deptno, avg(sal) myavg from EMP group by deptno) tmp where EMP.deptno= tmp.deptno and sal > myavg;
+```
+
+**查找每个部门工资最高的人的姓名、工资、部门、最高工资**
+
+```mysql
+select * from EMP t1, ((select deptno, max(sal) mymax from EMP group by deptno) as t2) where t1.deptno=t2.deptno and t1.sal = t2.mymax;
+```
+
+**显示每个部门的信息（部门名，编号，地址）和人员数量**
+
+```mysql
+select DEPT.dname, DEPT.deptno, DEPT.loc,count(*) '部门人数' from EMP,
+DEPT
+where EMP.deptno=DEPT.deptno
+group by DEPT.deptno,DEPT.dname,DEPT.loc
+```
+
+```mysql
+-- 1. 对EMP表进行人员统计
+select count(*), deptno from EMP group by deptno;
+-- 2. 将上面的表看作临时表
+select DEPT.deptno, dname, mycnt, loc from DEPT,
+(select count(*) mycnt, deptno from EMP group by deptno) tmp
+where DEPT.deptno=tmp.deptno
+```
+
+**8.4.5 合并查询**
+
+**案例：将工资大于2500或职位是MANAGER的人找出来**
+
+```mysql
+select * from EMP where sal > 2500 union select * from EMP where job='MANAGER';
+```
+
+**案例：将工资大于25000或职位是MANAGER的人找出来**
+
+```mysql
+select * from EMP where sal > 2500 union all select * from EMP where job='MANAGER';
 ```
 
 
@@ -1445,6 +1565,261 @@ select ename, job, sal, deptno from EMP where job  in (select job from EMP where
 
 
 **8.5 实战OJ**
+
+
+
+## 9.表的内连和外连
+
+**9.1 内连接**
+
+**案例：显示SMITH的名字和部门名称**
+
+```mysql
+select * from DEPT, EMP where DEPT.deptno = EMP.deptno and ename='SMITH'; 
+select ename, dname from EMP inner join DEPT on EMP.deptno=DEPT.deptno and ename='SMITH';
+select ename, dname from EMP inner join DEPT on EMP.deptno=DEPT.deptno where ename='SMITH';
+// 1.select * from tb1 inner join tb2 on ... where ...
+//ON：写表与表之间的连接条件；WHERE：写对结果的筛选条件。
+```
+
+```mysql
+select ename, dname                 -- 显示什么
+from EMP                            -- 从哪张主表开始
+inner join DEPT                     -- 连接哪张表
+on EMP.deptno = DEPT.deptno         -- 两表根据什么匹配
+where ename = 'SMITH';              -- 最后筛选谁
+```
+
+
+
+**9.2 外连接**
+
+**9.2.1 左外连接**
+
+**查询所有学生的成绩，如果这个学生没有成绩，也要将学生的个人信息显示出来**
+
+```mysql
+mysql> select * from stu left join exam on stu.id=exam.id;
+mysql> select * from stu inner join exam on stu.id=exam.id;
+```
+
+**9.2.1 右外连接**
+
+**对stu表和exam表联合查询，把所有的成绩都显示出来，即使这个成绩没有学生与它对应，也要 显示出来**
+
+```mysql
+select * from stu right join exam on stu.id=exam.id;
+```
+
+**列出部门名称和这些部门的员工信息，同时列出没有员工的部门**
+
+```mysql
+方法一：
+select d.dname, e.* from dept d left join emp e on d.deptno=e.deptno;
+方法二：
+select d.dname, e.* from emp e right join dept d on d.deptno=e.deptno;
+```
+
+
+
+## 10索引
+
+**1. 没有索引，可能会有什么问题**
+
+```
+表是正文
+索引是目录
+WHERE是要找的内容
+索引帮助MySQL快速定位数据
+```
+
+```
+1. 索引类似目录，用来加快查询
+2. InnoDB普通索引通常使用B+Tree
+3. 主键、唯一键会自动产生相应索引
+4. 索引会加快查询，但会占空间并降低增删改速度
+```
+
+**MySQL的服务器，本质是在内存的，所有数据库的CURD操作，全部都是在内存中进行的。------索引也是如此。**
+
+**提高算法效率的因素：1.数据组织的方式  2.算法本身。**
+
+**查快。插入，更新，删除为代价，增加了大量的IO。**
+
+```mysql
+select * from EMP where empno=998877;
+// 800万数据, 五秒左右的
+```
+
+```mysql
+alter table EMP add index(empno);
+// 添加索引
+```
+
+```mysql
+select * from EMP where empno=998877;
+// 秒出
+```
+
+**2. 认识磁盘**
+
+**3. MySQL 与磁盘交互基本单位**
+
+**而 MySQL 作为一款应用软件，可以想象成一种特殊的文件系统。它有着更高的IO场景，所以，为了提高 基本的IO效率， MySQL 进行IO的基本单位是 16KB** 
+
+**(后面统一使用 InnoDB 存储引擎讲解)**
+
+```mysql
+mysql> SHOW GLOBAL STATUS LIKE 'innodb_page_size';
+```
+
+
+
+**4. 建立共识**
+
+**MySQL 中的数据文件，是以page为单位保存在磁盘当中的。**
+
+ **MySQL 的 CURD 操作，都需要通过计算，找到对应的插入位置，或者找到对应要修改或者查询的数 据。** 
+
+**而只要涉及计算，就需要CPU参与，而为了便于CPU参与，一定要能够先将数据移动到内存当中。 **
+
+**所以在特定时间内，数据一定是磁盘中有，内存中也有。后续操作完内存数据之后，以特定的刷新 策略，刷新到磁盘。而这时，就涉及到磁盘和内存的数据交互，也就是IO了。而此时IO的基本单位 就是Page。** 
+
+**为了更好的进行上面的操作， MySQL 服务器在内存中运行的时候，在服务器内部，就申请了被称 为 Buffer Pool 的的大内存空间，来进行各种缓存。其实就是很大的内存空间，来和磁盘数据进 行IO交互。**
+
+ **为何更高的效率，一定要尽可能的减少系统和磁盘IO的次数**
+
+
+
+**5. 索引的理解**
+
+**1.我们向一个具有主键的表中，乱序插入数据，发现数据会自动排序 。 Page页交换。**
+
+​	**mysql的page页。mysql内部，一定需要并存在大量的page，也就决定了，mysal必须要将多个同时存在的page管理起来。**
+
+​	**要管理所有的mysql内的page ,先描述，后组织。**
+
+​	**所有，不要简单的将page认为是一个内存块， page页内部也必须写入对应的管理信息。**
+
+```c++
+struct page
+{
+	struct page* next;
+    struct page* prev;
+    char buffer[NUM];
+}; 16KB 
+
+// 链表管理数据的
+page1---page2---page3---pagen
+```
+
+![image-20260711191510146](picture/image-20260711191510146.png)
+
+![image-20260711192114930](picture/image-20260711192114930.png)
+
+**谁做的？mysql默认安装主键 进行排序的。 为什么这么做？page页目录使用。需要有序的。**
+
+**页目录**
+
+![image-20260711192315549](picture/image-20260711192315549.png)
+
+**单页**
+
+![image-20260711192910812](picture/image-20260711192910812.png)
+
+**目录，目录记录数据的起始位置。**
+
+**多页**
+
+**MySQL 中每一页的大小只有 16KB ，单个Page大小固定，所以随着数据量不断增大， 16KB 不可能存下 所有的数据，那么必定会有多个页来存储数据。**
+
+![image-20260711193547772](picture/image-20260711193547772.png)
+
+![image-20260711194009618](picture/image-20260711194009618.png)
+
+![image-20260711194618465](picture/image-20260711194618465.png)
+
+**这货就是传说中的B+树啊！没错，至此，我们已经给我们的表user构建完了主键索引。**
+
+**1.叶子节点保存有数据，路上节点没有，非叶子节点，不要数据，只有目录**
+
+​	**非叶子节点不存数据，可以存更多的目录项，目录页可以更多的管理更多的叶子page,  这颗树一定是一个矮胖型  的树。**
+
+​	**矮胖：途径路上节点   减少的。 找到目标数据，只需要更少的page。IO次数减少，IO层面，提高了效率的。**
+
+​	**1.先加载根，2.局部  3.叶子。**
+
+​	**每一个节点，都有目录项，大大提高搜索效率。**
+
+**整体提高了效率**
+
+**mysql Innode db下的索引结构。 一般我们建表插入数据的时候，就是在该结构下的CURD。**
+
+**没有主键怎么办？ 也是这样吗？  也是的。会有默认主键的。**
+
+
+
+**2.叶子节点全部用链表连起来。**
+
+**B+树的特点。  我们比较希望进行范围查找。 **
+
+
+
+
+
+**聚簇索引 VS 非聚簇索引**
+
+**MyISAM 引擎同样使用B+树作为索引结果，叶节点的data域存放的是数据记录的地址。**
+
+**相较于 InnoDB 索引， InnoDB 是将索引和数据放在一起的。**
+
+**索引的本质：B+数据结构的。**
+
+
+
+**所以通过辅助（普通）索引，找到目标记录，需要两遍索引：首先检索辅助索引获得主键，然后用主键 到主索引中检索获得记录。这种过程，就叫做回表查询**
+
+
+
+ 
+
+## 11事务
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
