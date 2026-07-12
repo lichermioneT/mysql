@@ -30,8 +30,6 @@ show  variables like 'character_set_database';
 show variables like 'collation_database';
 ```
 
-
-
 **2.2创建和删除**
 
 **创建数据库：**
@@ -79,8 +77,6 @@ use d1;
 ```mysql
 show processlist;
 ```
-
-
 
 
 
@@ -433,6 +429,37 @@ REFERENCES         引用
 class(id)          class 表中的 id 字段
 ```
 
+**约束总结：**
+
+**1. null  not null**
+
+**2. default**
+
+**3. commet**
+
+**4.zerofill**
+
+**5. primary key**
+
+**6. auto_increment**
+
+**7. unique_key**
+
+**8. foreign key     references   **
+
+```
+FOREIGN KEY        外键
+(class_id)         本表的字段
+REFERENCES         引用
+class(id)          class 表中的 id 字段
+```
+
+
+
+
+
+
+
 
 
 ## 6查询
@@ -713,6 +740,14 @@ select department_id, count(*) from employee group by department_id having count
 select department_id, sum(salary) as sum_sal from employee group by department_id having sum(salary) > 25000;
 select department_id, sum(salary) as sum_sal from employee group by department_id having sum_sal > 25000;
 ```
+
+**1. insert   replace**
+
+**2. select   where   having**
+
+**3. is null, is not null**
+
+
 
 
 
@@ -1056,21 +1091,171 @@ select e2.ename, e2.empno from EMP e1, EMP e2 where e1.ename='FORD' and e1.mgr =
 
 **8.4 子查询**
 
+**单行子查询**
+
+**显示SMITH同一部门的员工**
+
+```mysql
+select * from EMP where deptno = (select deptno from EMP where ename='SMITH');
+2.查询                            1.子查询，SMITH的部门所在
+```
+
+ **多行子查询**
+
+**in关键字；查询和10号部门的工作岗位相同的雇员的名字，岗位，工资，部门号，但是不包含10自 己的**
+
+```mysql
+// 1.子查询多行
+mysql> select distinct job from EMP where deptno=10;
++-----------+
+| job       |
++-----------+
+| MANAGER   |
+| PRESIDENT |
+| CLERK     |
++-----------+
+// 2.查询
+mysql> select ename, job, sal, deptno from EMP where job  in (select job from EMP where deptno=10);
++--------+-----------+---------+--------+
+| ename  | job       | sal     | deptno |
++--------+-----------+---------+--------+
+| SMITH  | CLERK     |  800.00 |     20 |
+| JONES  | MANAGER   | 2975.00 |     20 |
+| BLAKE  | MANAGER   | 2850.00 |     30 |
+| CLARK  | MANAGER   | 2450.00 |     10 |
+| KING   | PRESIDENT | 5000.00 |     10 |
+| ADAMS  | CLERK     | 1100.00 |     20 |
+| JAMES  | CLERK     |  950.00 |     30 |
+| MILLER | CLERK     | 1300.00 |     10 |
++--------+-----------+---------+--------+
+// 3去除部门号
+mysql> select ename, job, sal, deptno from EMP where job  in (select job from EMP where deptno=10) and deptno != 10;
++-------+---------+---------+--------+
+| ename | job     | sal     | deptno |
++-------+---------+---------+--------+
+| SMITH | CLERK   |  800.00 |     20 |
+| JONES | MANAGER | 2975.00 |     20 |
+| BLAKE | MANAGER | 2850.00 |     30 |
+| ADAMS | CLERK   | 1100.00 |     20 |
+| JAMES | CLERK   |  950.00 |     30 |
++-------+---------+---------+--------+
+```
+
+```mysql
+select ename, job, sal, deptno from EMP where job  in (select job from EMP where deptno=10) and deptno != 10;
+select ename, job, sal, deptno from EMP where job  in (select job from EMP where deptno=10) and deptno <> 10;
+```
+
+**all关键字；显示工资比部门30的所有员工的工资高的员工的姓名、工资和部门号**
+
+```mysql
+mysql> select * from EMP where sal > (select max(sal) from EMP where deptno=30);
+	   2.查询					      1.子查询				 
+mysql> select * from EMP where sal > all(select sal from EMP where deptno=30);
+       2.查询                         1.子查询
+```
+
+**any关键字；显示工资比部门30的任意员工的工资高的员工的姓名、工资和部门号（包含自己部门 的员工）**
+
+```mysql
+mysql> select * from EMP where sal > any(select distinct sal from EMP where deptno=30);
+```
+
+ **多列子查询**
+
+**案例：查询和SMITH的部门和岗位完全相同的所有雇员，不含SMITH本人**
+
+```mysql
+select * from EMP  where (deptno, job) = (select deptno, job from EMP where ename='SMITH') and ename <> 'SMITH';
+select * from EMP  where (deptno, job) in (select deptno, job from EMP where ename='SMITH') and ename <> 'SMITH';
+```
+
+**显示每个高于自己部门平均工资的员工的姓名、部门、工资、平均工资**
+
+```mysql
+select * from EMP, (select deptno, avg(sal) myavg from EMP group by deptno) tmp where EMP.deptno= tmp.deptno and sal > myavg;
+```
+
+**查找每个部门工资最高的人的姓名、工资、部门、最高工资**
+
+```mysql
+select * from EMP t1, ((select deptno, max(sal) mymax from EMP group by deptno) as t2) where t1.deptno=t2.deptno and t1.sal = t2.mymax;
+```
+
+**显示每个部门的信息（部门名，编号，地址）和人员数量**
+
+```mysql
+select DEPT.dname, DEPT.deptno, DEPT.loc,count(*) '部门人数' from EMP,
+DEPT
+where EMP.deptno=DEPT.deptno
+group by DEPT.deptno,DEPT.dname,DEPT.loc
+```
+
+```mysql
+-- 1. 对EMP表进行人员统计
+select count(*), deptno from EMP group by deptno;
+-- 2. 将上面的表看作临时表
+select DEPT.deptno, dname, mycnt, loc from DEPT,
+(select count(*) mycnt, deptno from EMP group by deptno) tmp
+where DEPT.deptno=tmp.deptno
+```
+
+**案例：将工资大于2500或职位是MANAGER的人找出来**
+
+```mysql
+select * from EMP where sal > 2500 union select * from EMP where job='MANAGER';
+```
+
+**案例：将工资大于25000或职位是MANAGER的人找出来**
+
+```mysql
+select * from EMP where sal > 2500 union all select * from EMP where job='MANAGER';
+```
 
 
 
+## 9.表的内连和外连
+
+**内连接**
+
+**案例：显示SMITH的名字和部门名称**
+
+```mysql
+select * from DEPT, EMP where DEPT.deptno = EMP.deptno and ename='SMITH'; 
+select ename, dname from EMP inner join DEPT on EMP.deptno=DEPT.deptno and ename='SMITH';
+select ename, dname from EMP inner join DEPT on EMP.deptno=DEPT.deptno where ename='SMITH';
+// 1.select * from tb1 inner join tb2 on ... where ...
+//ON：写表与表之间的连接条件；WHERE：写对结果的筛选条件。
+```
+
+```mysql
+select ename, dname                 -- 显示什么
+from EMP                            -- 从哪张主表开始
+inner join DEPT                     -- 连接哪张表
+on EMP.deptno = DEPT.deptno         -- 两表根据什么匹配
+where ename = 'SMITH';              -- 最后筛选谁
+```
+
+**左外连接**
+
+**对stu表和exam表联合查询，把所有的成绩都显示出来，即使这个成绩没有学生与它对应，也要 显示出来**
+
+```mysql
+select * from stu right join exam on stu.id=exam.id;
+```
+
+**列出部门名称和这些部门的员工信息，同时列出没有员工的部门**
+
+```mysql
+方法一：
+select d.dname, e.* from dept d left join emp e on d.deptno=e.deptno;
+方法二：
+select d.dname, e.* from emp e right join dept d on d.deptno=e.deptno;
+```
 
 
 
-
-
-
-
-
-
-
-
-
+## 10索引
 
 
 

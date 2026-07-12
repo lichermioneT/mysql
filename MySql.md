@@ -1781,65 +1781,198 @@ page1---page2---page3---pagen
 
 
 
- 
+**6.索引操作**
+
+ **创建主键索引**
+
+```mysql
+create table user1(id int primary key, name varchar(30));               // 
+create table user2(id int, name varchar(30), primary key(id));
+create table user3(id int, name varchar(30)); alter table user3 add primary key(id); // 创建主键索引
+```
+
+```mysql
+alter table tb_name drop primary key    // 删除主键
+alter table user3 add primary key(id);  // 添加主键
+```
+
+```mysql
+show index from EMP \g  // 查看mysql的索引
+```
+
+**一个表中，最多有一个主键索引，当然可以使符合主键** 
+
+**主键索引的效率高（主键不可重复）** 
+
+**创建主键索引的列，它的值不能为null，且不能重复** 
+
+**主键索引的列基本上是int**
+
+
+
+**唯一索引的创建**
+
+```mysql
+create table user4(id int primary key, name varchar(30) unique);
+
+create table user5(id int primary key, name varchar(30), unique(name));
+
+create table user6(id int primary key, name varchar(30)）；
+alter table user6 add unique(name);
+
+alter table 表名 drop index 索引名； 索引名就是show keys
+
+```
+
+**一个表中，可以有多个唯一索引** 
+
+**查询效率高** 
+
+**如果在某一列建立唯一索引，必须保证这列不能有重复数据** 
+
+**如果一个唯一索引上指定not null，等价于主键索引**
+
+
+
+**普通索引的创建**
+
+```mysql
+create table user8(id int primary key,name varchar(20),email varchar(30),index(name)); --在表的定义最后，指定某列为索引
+create table user9(id int primary key, name varchar(20), emailvarchar(30));
+alter table user9 add index(name); --创建完表以后指定某列为普通索引
+
+create table user10(id int primary key, name varchar(20), emailvarchar(30));
+-- 创建一个索引名为 idx_name 的索引
+create index idx_name on user10(name);
+```
+
+**全文索引的创建**
+
+
 
 ## 11事务
 
+**事务就是一组DML语句组成，把多条 SQL 操作看成一个不可分割的整体：要么全部成功，要么全部失败。**
+
+**事务的四大特性：ACID**
+
+```
+1. 原子性 Atomicity
+	事务中的操作要么全部成功，要么全部失败。
+		要么全成功，要么全失败
+2. 一致性 Consistency
+	事务执行前后，数据库必须保持正确、合法的状态。
+		事务前后数据合法
+3. 隔离性 Isolation
+	多个事务同时执行时，彼此之间尽量互不干扰。
+		并发事务互不干扰
+4. 持久性 Durability
+	事务一旦提交，修改结果就应该被永久保存。
+		提交后永久保存
+```
+
+**一个请求就是事务，用户来说。**
+
+**因此事务本质上是为了应用层服 务的.而不是伴随着数据库系统天生就有的.  SQL给我，我帮你考虑事务。**
 
 
 
+**事务的版本支持**
+
+```mysql
+show engines \G
+show engines;
+```
+
+**事务提交方式**
+
+```mysql
+show variables like 'autocommit';
+set automcommit=1
+set automcommit=0
+```
+
+**为了便于演示，我们将mysql的默认隔离级别设置成读未提交。**
+
+```mysql
+set global transaction isolation level READ UNCOMMITTED;
+```
 
 
 
+```mysql
+start transaction;  启动事务
+begin; 启动事务
+savepoint save1; 设置一个保存点
+```
+
+**运行期间才能够回滚**
+
+**自动回滚和手动回滚**
+
+```
+autocommit = 1：每条修改语句执行完自动保存
+autocommit = 0：修改后必须手动 COMMIT 或 ROLLBACK
+COMMIT   = 确认保存
+ROLLBACK = 撤销修改
+```
+
+![image-20260712195525970](picture/image-20260712195525970.png)
 
 
 
+**事务隔离级别**
+
+**隔离级别**
+
+ **运行中的事务，进行相互隔离。事务运行中，不会出现相互影响，隔离性。**
+
+**影响的程度不同：隔离级别。**
+
+​	**读未提交【Read Uncommitted】：**
+
+​	**读提交【Read Committed】 ：**
+
+​	**可重复读【Repeatable Read】：**
+
+​	**串行化【Serializable】:**
 
 
 
+```mysql
+SELECT @@global.tx_isolation; --查看全局隔级别
+SELECT @@session.tx_isolation; --查看会话(当前)全局隔级别
+SELECT @@tx_isolation; --默认同上
+```
+
+```mysql
+set session transaction isolation level read committed; // 设置会话隔离级别
+set global transaction isolation level READ UNCOMMITTED; // 设置全局的
+```
 
 
 
+**读未提交【Read Uncommitted】：直接读，别人都还没用提交呢。增加删除更新，马上都能够读。  脏读现象。我不干净了。**
+
+​	**一个事务在执行中，读到另一个执行中事务的更新(或其他操作)但是未commit的数据，这种现象叫做脏读   (dirty read)**
+
+**读提交【Read Committed】**
+
+​	**进程A读写，你不能看到数据，进程A关闭。  进程B可看到最新的数据。两次读取的数据可能不一样的。不能重复的**
+
+​	**问题所在：不能让进程B，在运行看到更新的数据。**
+
+![image-20260712224110227](picture/image-20260712224110227.png)
+
+**可重复读【Repeatable Read】**
 
 
 
+**串行化【serializable】**
 
+**--对所有操作全部加锁，进行串行化，不会有问题，但是只要串行化，效率很低，几乎完全不会被采用**
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+**墨迹，**
 
 
 
