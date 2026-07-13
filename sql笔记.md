@@ -1257,6 +1257,197 @@ select d.dname, e.* from emp e right join dept d on d.deptno=e.deptno;
 
 ## 10索引
 
+**B+树的原理。**
+
+
+
+## 11事务
+
+**MySQL 的事务（Transaction），可以理解为：把多条 SQL 操作看成一个不可分割的整体：要么全部成功，要么全部失败。**
+
+**1.事务的基本操作**
+
+```mysql
+start transaction;
+commit;
+rollback;
+savepoint;
+```
+
+```mysql
+start transaction;  begin; // 开启事务后，后续的增删改操作暂时不会被永久确认。
+commit;                    // 当前事务中的所有修改都确认生效，并永久保存。
+rollback;                  // 撤销当前事务中尚未提交的所有修改。
+// 正确就提交，错误就回滚
+```
+
+**2. MySQL 默认自动提交**
+
+**autocommit = 1**
+
+```mysql
+update EMP
+set sal = 900
+where empno = 7369;
+```
+
+相当于
+
+```mysql
+start transaction;
+update EMP
+set sal = 900
+where empno = 7369;
+commit;
+```
+
+**3. 显式开启事务后，自动提交暂时失效**
+
+**4. 事务的四大特性：ACID**
+
+**1. 原子性 Atomicity:  事务中的操作要么全部成功，要么全部失败。**
+
+**2.一致性 Consistency：事务执行前后，数据库必须保持正确、合法的状态。**
+
+**3. 隔离性 Isolation：多个事务同时执行时，彼此之间尽量互不干扰。**
+
+**4.持久性 Durability：事务一旦提交，修改结果就应该被永久保存。**
+
+
+
+**5. 事务的隔离级别**
+
+```
+READ UNCOMMITTED
+READ COMMITTED
+REPEATABLE READ
+SERIALIZABLE
+```
+
+**1. READ UNCOMMITTED：读未提交, 一个事务可以读取另一个事务尚未提交的数据。**
+
+​	**隔离级别最低，并发性能高，但安全性较差。**
+
+**2. READ COMMITTED：读已提交, 只能读取其他事务已经提交的数据。**
+
+​	**同一事务内两次读取结果不同。**
+
+**3. REPEATABLE READ：可重复读, 同一个事务中，多次读取同一数据，结果通常保持一致。**
+
+​	**保证当前事务中的读取视图相对稳定。**
+
+**4.SERIALIZABLE：串行化 多个事务近似按照一个接一个的方式执行，可以避免更多并发问题，但并发性能最低，锁竞争也更明显。**
+
+
+
+**MVCC 同一行数据在逻辑上可以存在多个历史版本，不同事务根据自己的可见性规则，读取适合自己的版本。**
+
+```mysql
+id = 1 name = 张三 balance = 1000
+进程A
+start transaction;
+update account set balance = 500 where id = 1;
+
+进程B
+select balance from account where id = 1;
+```
+
+**1.事务B一直等到事务A完成任务。啰嗦。   影响并发性能**
+
+**2.事务B直接读取事务A尚未提交的数据。  产生脏读**
+
+**MVCC:  1.事务 A 修改新版本：500.  2. 事务 B 仍然读取旧版本：1000 **
+
+**MVCC核心：数据版本链 + Read View 可见性判断**
+
+
+
+**DB_TRX_ID：Database Transaction Identifier 记录最后一次修改这一行的事务 ID。**
+
+**DB_ROLL_PTR**：**Database Rollback Pointer 回滚指针, 它指向这条记录的上一个历史版本。**
+
+**DB_ROW_ID 如果表中没有合适的主键或唯一非空索引，InnoDB 可能生成隐藏的行 ID。**
+
+**DB_TRX_ID：版本由哪个事务产生**
+**DB_ROLL_PTR：上一个版本在哪里**
+
+
+
+**Undo Log 和版本链**
+
+**假设原始数据：1000   事务 101 修改为：800    事务 102 又修改为：500**
+
+```
+当前记录
+balance = 500
+trx_id = 102
+      ↓
+Undo Log
+balance = 800
+trx_id = 101
+      ↓
+Undo Log
+balance = 1000
+trx_id = 90
+```
+
+**当某个事务不能读取最新版本时，InnoDB 会沿着 `DB_ROLL_PTR` 向前查找，直到找到对该事务可见的版本。**
+
+**Read View 是什么 当前事务应该看到哪个版本？**
+
+**Read View 会记录当时哪些事务：**
+
+```
+已经提交
+正在运行
+还没有开始
+```
+
+**Read View 中可以重点理解以下信息：**
+
+```
+creator_trx_id：创建 Read View 的事务 ID
+m_ids：创建时仍然活跃、未提交的事务 ID 集合
+min_trx_id：活跃事务中的最小事务 ID
+max_trx_id：下一个将要分配的事务 ID
+```
+
+**Read View 记录了当前有哪些事务还没有提交，用它判断某个数据版本是否可见。**
+
+**MVCC 是 InnoDB 通过 Undo Log 保存数据历史版本，再利用 Read View 判断版本可见性，使普通读操作可以读取合适的数据版本，从而减少读写冲突、提高并发性能。**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

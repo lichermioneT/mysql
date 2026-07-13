@@ -1974,6 +1974,120 @@ set global transaction isolation level READ UNCOMMITTED; // 设置全局的
 
 **墨迹，**
 
+**一致性**
+
+**其实一致性和用户的业务逻辑强相关，一般MySQL提供技术支持，但是一致性还是要用户业务逻辑 做支撑，也就是，一致性，是由用户决定的。**
+
+
+
+**试学内容-如何理解隔离性2**
+
+**数据库并发的场景有三种：读读，读写，写写。**
+
+**读写并发现象 多版本并发控制（ MVCC ）是一种用来解决 读-写冲突 的无锁并发控制**
+
+**1. 每个事物都要有 自己的事务ID，根据事务ID的大小，来决定事务到来的先后顺序。**
+
+**2. mysald可能会面临处理多个事务的情况的。事务也有自己的声明周期，mysqld要对多个事务进行管理，先描述，后组织。**
+
+​	**事务在我看来，mysqld中一定是对应的一个或者一套结构体对象、类对象。事务也要有自己的结构体。**
+
+**1. DB_TRX_ID ：6 byte，最近修改( 修改/插入 )事务ID，记录创建这条记录/最后一次修改该记录的事 务ID**
+
+**2. DB_ROLL_PTR : 7 byte，回滚指针，指向这条记录的上一个版本（简单理解成，指向历史版本就 行，这些数据一般在 undo log 中）**
+
+**3. DB_ROW_ID : 6 byte，隐含的自增ID（隐藏主键），如果数据表没有主键， InnoDB 会自动以 DB_ROW_ID 产生一个聚簇索引**
+
+![image-20260713100250769](picture/image-20260713100250769.png)
+
+**uddo日期，mysql的一块缓冲区的。**
+
+![image-20260713103023235](picture/image-20260713103023235.png)
+
+**MVCC，隔离版本决定我们看那个历史版本的**
+
+**read_view**
+
+
+
+## 12视图
+
+```mysql
+create view 视图名 as select 语句；
+```
+
+**修改了视图，对基表数据有影响**
+
+**修改了基表，对视图有影响**
+
+
+
+
+
+## 13用户管理
+
+```
+database:mysq;
+table:user
+```
+
+**用户管理的本质就是管理user表的增删查改。。**
+
+```mysql
+create user 'lic'@'localhost' identified by '123';
+flush privileges; 更新一下配置文件
+drop user lic@localhost;  删除用户信息
+
+create user 'lic'@'%' identified by '123'; // 任意IP地址登录
+
+set password=password('新的密码');
+set password for '用户名'@'主机名'=password('新的密码')；
+```
+
+
+
+**权限管理**
+
+```mysql
+grant 权限列表 on 库.对象名 to '用户名'@'登陆位置' [identified by '密码'] 赋权
+show grants for 'root'@'%'; 查看给的权限
+revoke 权限列表 on 库.对象名 from '用户名'@'登陆位置'； 回收权限
+```
+
+
+
+
+
+
+
+## 14 mysql connect
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
