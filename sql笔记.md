@@ -9,7 +9,8 @@
 **查看字符集：**
 
 ```mysql
-show charset
+show charset;
+show character set;
 ```
 
 **查看检验集:**
@@ -35,7 +36,8 @@ show variables like 'collation_database';
 **创建数据库：**
 
 ```mysql
-create database d1 character set utf8mb4 collate utf8mb4_general_ci;
+create database d1 character set utf8mb4 collate utf8mb4_general_ci; // 创建数据库
+show create database d1; // 查看创建语法
 ```
 
 **数据库最重要的就是字符集和校验集。**
@@ -82,6 +84,12 @@ show processlist;
 
 ## 3.表的操作
 
+**查看当前再在那个数据库里面的。**
+
+```mysql
+select database();
+```
+
 **3.1创建表和删除表：**
 
 **创建表：**
@@ -103,10 +111,9 @@ birthday date comment '生日'  ) character set utf8mb4 collate utf8mb4_general_
 **删除表：**
 
 ```mysql
-drop table users2;
+drop table users2; 清理表
+truncate user2; 删除数据
 ```
-
-
 
 **3.2查看表：**
 
@@ -120,9 +127,8 @@ desc users2;
 
 ```mysql
 show create table users2 \G;  // 也可以看到自增主键的下一个值的
+show create table users2; 
 ```
-
-
 
 **3.3表的性质修改：**
 
@@ -1415,6 +1421,10 @@ max_trx_id：下一个将要分配的事务 ID
 **Read View 记录了当前有哪些事务还没有提交，用它判断某个数据版本是否可见。**
 
 **MVCC 是 InnoDB 通过 Undo Log 保存数据历史版本，再利用 Read View 判断版本可见性，使普通读操作可以读取合适的数据版本，从而减少读写冲突、提高并发性能。**
+
+
+
+
 
 
 
