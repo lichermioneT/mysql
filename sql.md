@@ -1,5 +1,7 @@
 # sql
 
+## 1.单表查询
+
 1. 查询所有员工信息
 
 ```
@@ -521,11 +523,37 @@ select city, count(*) as conn from employee group by city;
 
 
 
+## 2.多表查询
 
+**先验证内连接**
 
+```
+select * from employees, departments where employees.department_id = departments.department_id;
+```
 
+```
+select * from employees inner join departments on employees.department_id = departments.department_id;
+```
 
+**注意：没有部门的林峰不会出现在结果中，因为内连接只保留能够匹配的数据。**
 
+**验证左连接**
+
+```
+select * from employees as e left join departments as d on e.department_id=d.department_id;
+```
+
+**查询所有部门及其员工**
+
+```
+select * from departments  as d left join employees as e on d.department_id=e.department_id;
+```
+
+**自连接查询领导**
+
+```my]
+select * from employees as e1 left join employees as e2 on e1.manager_id=e2.employee_id;
+```
 
 
 
